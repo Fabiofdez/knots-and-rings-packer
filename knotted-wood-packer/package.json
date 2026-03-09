@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "wood-packer": "node utils.js"
+  },
   "devDependencies": {
     "vite": "^4.0.0"
   },
@@ -12,7 +14,7 @@
     "glob": "^11.0.0",
     "looks-same": "^9.0.0",
     "prettier": "^3.3.2",
-    "prettier-plugin-organize-imports": "^4.0.0",
+    "prettier-plugin-organize-imports": "^4.3.0",
     "typescript": "^5.5.3"
   }
 }

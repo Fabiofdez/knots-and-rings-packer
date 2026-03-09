@@ -4,43 +4,29 @@ import { readdir, readFile } from "fs/promises";
 import { globSync } from "glob";
 import looksSame from "looks-same";
 import { extname } from "path";
+import { exit } from "process";
 
-const PACK_NAME = "Knotted_Wood_1.20.4.zip";
+const PACK_NAME = "knotted-wood-1.21.5.zip";
 
 /**
  * @typedef {{
- *    cmds: string[],
- *    args: string[] | undefined,
- *    fn: Function,
+ *   cmds: string[];
+ *   args: string[] | undefined;
+ *   fn: Function;
  * }} Option
  * @type {Option[]}
  */
 const ARG_OPTIONS = [
   {
     cmds: ["-h", "--help"],
-    fn: () => console.log(`Options: \n${getOptions()}\n`),
-  },
-  {
-    cmds: ["-n", "--new-log"],
-    args: ["wood-type"],
-    fn: (woodType) => {
-      if (!woodType) {
-        err("Wood type must be provided");
-        return;
-      }
-      addNewLog(woodType);
-    },
+    fn: () => console.log(getOptions()),
   },
   {
     cmds: ["-u", "--update-log"],
     args: ["wood-type"],
     fn: (woodType) => {
-      if (!woodType) {
-        err("Wood type must be provided");
-        return;
-      }
-      console.log(`Updating ${woodType}...`);
-      updateLog(woodType);
+      if (!woodType) errOfferHelp("Wood type must be provided");
+      updateWood(woodType);
     },
   },
   {
@@ -52,6 +38,12 @@ const ARG_OPTIONS = [
     fn: () => rezip(),
   },
 ];
+
+const CTM_TEMPLATES = {
+  log: "template_log.properties",
+  wood: "template_wood.properties",
+  top: "top.ctm.properties",
+};
 
 const EXISTING_WOOD_TYPES = [
   "acacia",
@@ -84,30 +76,45 @@ let DOWNLOADS = "";
 let TEMPLATES_DIR = "";
 
 function init() {
-  WORK_DIR = getShellConst("WORKDIR");
+  const [_np, filePath, cmd, ...args] = process.argv;
+
+  if (!cmd) {
+    errUsage("wood-packer [option] [<args>]");
+    return;
+  }
+
+  [WORK_DIR] = filePath.split("/knotted-wood-packer");
   DOWNLOADS = getShellConst("DOWNLOADS");
 
-  if (!WORK_DIR) {
-    err("Shell variable 'WORKDIR' not defined");
-    return;
+  if (!WORK_DIR || !filePath.includes("knotted-wood-packer")) {
+    errOfferHelp("Failed to parse variable 'WORKDIR'");
   }
   if (!DOWNLOADS) {
-    err("Shell variable 'DOWNLOADS' not defined");
-    return;
+    errOfferHelp("Shell variable 'DOWNLOADS' not defined");
   }
-  const [_np, _fp, cmd, ...args] = process.argv;
+
   TEMPLATES_DIR = `${WORK_DIR}/knotted-wood-packer/templates`;
 
   const opt = ARG_OPTIONS.find((opt) => opt.cmds.includes(cmd));
   if (opt) {
     opt.fn(...args);
   } else {
-    err(`Unknown command '${cmd}' (type -h, --help for options)`);
+    errOfferHelp(`Unknown command '${cmd}'`);
   }
+}
+
+function errOfferHelp(msg = "") {
+  err(`${msg.trim()} (type -h, --help for options)`);
+}
+
+function errUsage(msg = "") {
+  console.error(`usage: ${msg} \n\n${getOptions()}`);
+  exit(1);
 }
 
 function err(msg = "") {
   console.error(`ERROR: ${msg}\n`);
+  exit(1);
 }
 function warn(msg = "") {
   console.log(`WARNING: ${msg}\n`);
@@ -125,7 +132,7 @@ function getOptions() {
     const args = (opt.args || []).join("> <");
     opts.push(`   ${cmds}  ${args.length ? `<${args}>` : ""}`);
   }
-  return opts.join("\n");
+  return `Options: \n${opts.join("\n")}\n`;
 }
 
 function rezip() {
@@ -154,95 +161,91 @@ async function getDir(path = "") {
 }
 
 /**
- * @typedef {ReturnType<getBlock>} Block
+ * @typedef {ReturnType<typeof getAssetsFor>} WoodAssets
  * @param {string} woodType
  */
-function getBlock(woodType) {
-  const name = `${woodType}_log`;
+function getAssetsFor(woodType) {
   return {
-    name,
-    variantsDir: `${WORK_DIR}/${DIR.ctm}/${name}`,
-    topsDir: `${WORK_DIR}/${DIR.ctm}/_overlays/${name}_top`,
+    type: woodType,
+    logBlock: `${woodType}_log`,
+    woodBlock: `${woodType}_wood`,
+    variantsDir: `${WORK_DIR}/${DIR.ctm}/${woodType}`,
+    topsDir: `${WORK_DIR}/${DIR.ctm}/_overlays/${woodType}_log_top`,
   };
 }
 
-async function addNewLog(woodType) {
-  const block = getBlock(woodType);
-  console.log(`Adding new log ${block.name}...`);
+/** @param {WoodAssets} wood */
+function isTrunk(wood) {
+  if (wood.logBlock.startsWith("stripped_")) return wood.logBlock;
+  return `${wood.logBlock}:is_trunk=true`;
+}
 
-  const variants = await getDir(block.variantsDir);
-  const tops = await getDir(block.topsDir);
+/** @param {WoodAssets} wood */
+async function updateWood(wood) {
+  const variants = await getDir(wood.variantsDir);
+  const tops = await getDir(wood.topsDir);
 
-  if (variants.exists || tops.exists) {
-    warn(`Wood type '${woodType}' already exists`);
+  if (!variants.exists && !tops.exists) {
+    console.log(`Adding new '${wood.type}' wood type...`);
   }
-  if (!variants.exists) execSync(`mkdir ${block.variantsDir}`);
-  if (!tops.exists) execSync(`mkdir ${block.topsDir}`);
+  if (!variants.exists) execSync(`mkdir -p ${wood.variantsDir}`);
+  if (!tops.exists) execSync(`mkdir -p ${wood.topsDir}`);
 
-  await updateProperties(block);
-  updateAllSprites(block);
+  await updateProperties(wood);
+  updateAllSprites(wood);
 }
 
-async function updateLog(woodType) {
-  const block = getBlock(woodType);
+/** @param {WoodAssets} wood */
+async function updateProperties(wood) {
+  const logVariants = `${wood.variantsDir}/log.properties`;
+  const woodVariants = `${wood.variantsDir}/wood.properties`;
+  const logTops = `${wood.topsDir}/ctm.properties`;
 
-  const variants = await getDir(block.variantsDir);
-  const tops = await getDir(block.topsDir);
-
-  if (!variants.exists || !tops.exists) {
-    err(`Unknown wood type '${woodType}'`);
-    return;
-  }
-
-  await updateProperties(block);
-  updateAllSprites(block);
+  await updatePropsFor(CTM_TEMPLATES.log, logVariants, wood.logBlock);
+  await updatePropsFor(CTM_TEMPLATES.wood, woodVariants, wood.woodBlock);
+  await updatePropsFor(CTM_TEMPLATES.top, logTops, isTrunk(wood));
 }
 
-/** @param {Block} block */
-async function updateProperties(block) {
-  const blockProps = `${block.variantsDir}/${block.name}.properties`;
-  const blockTopsProps = `${block.topsDir}/ctm.properties`;
+/**
+ * @param {string} template
+ * @param {string} outfile
+ * @param {string} targetBlock
+ */
+async function updatePropsFor(template, outfile, targetBlock) {
+  execSync(`cp ${TEMPLATES_DIR}/${template} ${outfile}`);
 
-  updateCtmOverlay(block);
-
-  execSync(`cp ${TEMPLATES_DIR}/template_log.properties ${blockProps}`);
-  execSync(`cp ${TEMPLATES_DIR}/top.ctm.properties ${blockTopsProps}`);
-
-  readFile(blockProps)
+  return readFile(outfile)
     .then((buf) => buf.toLocaleString())
-    .then((props) => props.replace(/TEMPLATE_LOG/g, block.name))
-    .then((updated) => writeFileSync(blockProps, updated));
-
-  readFile(blockTopsProps)
-    .then((buf) => buf.toLocaleString())
-    .then((props) => props.replace(/TEMPLATE_LOG/g, block.name))
-    .then((updated) => writeFileSync(blockTopsProps, updated));
+    .then((props) => props.replace(/TEMPLATE_BLOCK/g, targetBlock))
+    .then((updated) => writeFileSync(outfile, updated));
 }
 
-/** @param {Block} block */
-function updateCtmOverlay(block) {
-  const ctmOverlayDirs = globSync(
-    `${WORK_DIR}/${DIR.ctm}/_overlays/logs*/ctm.properties`,
-  );
+/** @param {WoodAssets[]} woodAssets */
+function updateCtmOverlays(woodAssets) {
+  const ctmOverlaysDir = `${WORK_DIR}/${DIR.ctm}/_overlays`;
+  const ctmEdgesProps = globSync(`${ctmOverlaysDir}/edges/*/*.ctm.properties`);
 
-  const AXES = {
-    logs_x: "x",
-    logs_y: "y",
-    logs_z_horizontal: "z",
-    logs_z_vertical: "z",
+  /** @type {{ [k: string]: (wood: WoodAssets) => string }} */
+  const blockStateTransform = {
+    x: (wood) => `${wood.logBlock}:axis=x`,
+    y: (wood) => `${wood.logBlock}:axis=y`,
+    z_horizontal: (wood) => `${wood.logBlock}:axis=z`,
+    z_vertical: (wood) => `${wood.logBlock}:axis=z`,
+    wood: (wood) => wood.woodBlock,
   };
 
-  for (const propsPath of ctmOverlayDirs.sort()) {
-    const overlayAxis = propsPath.split("/").at(-2);
-    const axis = AXES[overlayAxis];
+  for (const propsPath of ctmEdgesProps) {
+    const propsFile = propsPath.split("/").pop();
+    const [overlayType] = propsFile.split(".");
 
-    const [firstLine, ...otherProps] = readFileSync(propsPath)
+    const matchBlocks = woodAssets
+      .map(blockStateTransform[overlayType])
+      .filter((block) => block?.length > 0);
+
+    const otherProps = readFileSync(propsPath)
       .toLocaleString()
-      .split("\n");
-
-    const matchBlocks = firstLine.replace("matchBlocks=", "").split(" ");
-    matchBlocks.push(`${block.name}:axis=${axis}`);
-    matchBlocks.forEach((val, idx) => (matchBlocks[idx] = val.trim()));
+      .split("\n")
+      .filter((line) => !line.startsWith("matchBlocks"));
 
     const updatedProps = [
       "matchBlocks=" + [...new Set(matchBlocks)].sort().join(" "),
@@ -252,46 +255,51 @@ function updateCtmOverlay(block) {
   }
 }
 
-/** @param {Block} block */
-async function updateAllSprites(block) {
+/** @param {WoodAssets} wood */
+async function updateAllSprites(wood) {
   const SpriteTypes = { VARIANT: true, TOPS: false };
 
-  await createTmpDir(block);
-  await updateSprites(block, SpriteTypes.VARIANT);
-  await updateSprites(block, SpriteTypes.TOPS);
-  execSync(`rm -r ${WORK_DIR}/${block.name}_tmp`);
+  execSync(`mkdir -p ${WORK_DIR}/${wood.type}_tmp`);
+  await updateSprites(wood, SpriteTypes.VARIANT);
+  await updateSprites(wood, SpriteTypes.TOPS);
 
-  console.log(`...updated ${block.name}`);
+  execSync(`rm -r ${WORK_DIR}/${wood.type}_tmp`);
+  console.log(`...updated '${wood.type}' wood type`);
 }
 
 /**
- * @param {Block} block
+ * @param {WoodAssets} wood
  * @param {boolean} isVariantType
  */
-async function updateSprites(block, isVariantType = true) {
+async function updateSprites(wood, isVariantType = true) {
   const spritesheetDir = isVariantType ? DIR.variantSprites : DIR.topSprites;
-  const blockSpriteDir = isVariantType ? block.variantsDir : block.topsDir;
+  const blockSpriteDir = isVariantType ? wood.variantsDir : wood.topsDir;
+  if (!blockSpriteDir) {
+    err(`Failed to parse output directory for wood type '${wood.type}'`);
+  }
+
   const type = isVariantType ? "variants" : "tops";
   const sceneStart = isVariantType ? 1 : 0;
 
   const spritesheets = await readdir(`${DOWNLOADS}/${spritesheetDir}`);
-  if (!spritesheets.includes(`${block.name}.png`)) {
-    warn(`Spritesheet (${type}) for '${block.name}' not found`);
+  if (!spritesheets.includes(`${wood.type}.png`)) {
+    warn(`Spritesheet (${type}) for wood type '${wood.type}' not found`);
     return;
   }
-  const path = `${DOWNLOADS}/${spritesheetDir}/${block.name}.png`;
+  const path = `${DOWNLOADS}/${spritesheetDir}/${wood.type}.png`;
   const convertCmd = `convert ${path} -crop 16x16 +repage -scene ${sceneStart} %d.png`;
 
-  execSync(`rm -rf ${WORK_DIR}/${block.name}_tmp/*`);
-  execSync(`cd ${WORK_DIR}/${block.name}_tmp && ${convertCmd}`);
+  execSync(`rm -rf ${WORK_DIR}/${wood.type}_tmp/*`);
+  execSync(`cd ${WORK_DIR}/${wood.type}_tmp && ${convertCmd}`);
 
   if (isVariantType) {
-    const defaultSprite = `${DOWNLOADS}/${DIR.defaultSprites}/${block.name}.png`;
-    execSync(`cp ${defaultSprite} ${WORK_DIR}/${block.name}_tmp/0.png`);
+    const defaultSprite = `${DOWNLOADS}/${DIR.defaultSprites}/${wood.type}.png`;
+    execSync(`cp ${defaultSprite} ${WORK_DIR}/${wood.type}_tmp/0.png`);
+  } else {
+    execSync(`rm ${WORK_DIR}/${wood.type}_tmp/47.png`);
   }
-  if (!isVariantType) execSync(`rm ${WORK_DIR}/${block.name}_tmp/47.png`);
 
-  const tmpSprites = await readdir(`${WORK_DIR}/${block.name}_tmp`);
+  const tmpSprites = await readdir(`${WORK_DIR}/${wood.type}_tmp`);
   const existingSprites = await readdir(`${blockSpriteDir}`);
 
   existingSprites
@@ -303,7 +311,7 @@ async function updateSprites(block, isVariantType = true) {
     });
 
   for (const sprite of tmpSprites) {
-    const tmpSpritePath = `${WORK_DIR}/${block.name}_tmp/${sprite}`;
+    const tmpSpritePath = `${WORK_DIR}/${wood.type}_tmp/${sprite}`;
     const existingSpritePath = `${blockSpriteDir}/${sprite}`;
     const replace = () => execSync(`cp ${tmpSpritePath} ${existingSpritePath}`);
 
@@ -318,19 +326,14 @@ async function updateSprites(block, isVariantType = true) {
   execSync(`optipng -o7 -quiet ${blockSpriteDir}/*.png`);
 }
 
-/** @param {Block} block */
-async function createTmpDir(block) {
-  const tmpDir = await getDir(`${WORK_DIR}/${block.name}_tmp`);
-  if (!tmpDir.exists) {
-    execSync(`mkdir ${WORK_DIR}/${block.name}_tmp`);
-  }
-}
-
 async function updateAll() {
-  console.log(`Updating all ${EXISTING_WOOD_TYPES.length} logs...`);
+  console.log(`Updating all ${EXISTING_WOOD_TYPES.length} wood types...`);
 
-  for (const woodType of EXISTING_WOOD_TYPES) {
-    await updateLog(woodType);
+  const woodAssets = EXISTING_WOOD_TYPES.map((w) => getAssetsFor(w));
+  updateCtmOverlays(woodAssets);
+
+  for (const wood of woodAssets) {
+    await updateWood(wood);
   }
 }
 
