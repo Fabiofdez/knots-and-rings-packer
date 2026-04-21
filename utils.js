@@ -6,7 +6,7 @@ import looksSame from "looks-same";
 import { extname } from "path";
 import { exit } from "process";
 
-const PACK_NAME = "knotted-wood-1.21.5.zip";
+const PACK_NAME = "knots-and-rings-standalone.zip";
 
 /**
  * @typedef {{
@@ -53,6 +53,7 @@ const EXISTING_WOOD_TYPES = [
   "jungle",
   "mangrove",
   "oak",
+  "pale_oak",
   "spruce",
   "stripped_acacia",
   "stripped_birch",
@@ -61,6 +62,7 @@ const EXISTING_WOOD_TYPES = [
   "stripped_jungle",
   "stripped_mangrove",
   "stripped_oak",
+  "stripped_pale_oak",
   "stripped_spruce",
 ];
 
@@ -83,17 +85,17 @@ function init() {
     return;
   }
 
-  [WORK_DIR] = filePath.split("/knotted-wood-packer");
+  [WORK_DIR] = filePath.split("/utils.js");
   DOWNLOADS = getShellConst("DOWNLOADS");
 
-  if (!WORK_DIR || !filePath.includes("knotted-wood-packer")) {
+  if (!WORK_DIR || !filePath.includes("utils.js")) {
     errOfferHelp("Failed to parse variable 'WORKDIR'");
   }
   if (!DOWNLOADS) {
     errOfferHelp("Shell variable 'DOWNLOADS' not defined");
   }
 
-  TEMPLATES_DIR = `${WORK_DIR}/knotted-wood-packer/templates`;
+  TEMPLATES_DIR = `${WORK_DIR}/templates`;
 
   const opt = ARG_OPTIONS.find((opt) => opt.cmds.includes(cmd));
   if (opt) {
@@ -175,8 +177,12 @@ function getAssetsFor(woodType) {
 }
 
 /** @param {WoodAssets} wood */
+function isStripped(wood) {
+  return wood.logBlock.startsWith("stripped_");
+}
+
+/** @param {WoodAssets} wood */
 function isTrunk(wood) {
-  if (wood.logBlock.startsWith("stripped_")) return wood.logBlock;
   return `${wood.logBlock}:is_trunk=true`;
 }
 
