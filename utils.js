@@ -66,11 +66,14 @@ const EXISTING_WOOD_TYPES = [
   "stripped_spruce",
 ];
 
+const SpriteTypes = /** @type const */ ({ VARIANT: "variants", TOPS: "tops" });
+
 const DIR = {
   ctm: "assets/minecraft/optifine/ctm",
   defaultSprites: "Knotted_Wood/sprite_defaults",
   variantSprites: "Knotted_Wood/spritesheet_variants",
   topSprites: "Knotted_Wood/spritesheet_tops",
+  edgeSprites: "Knotted_Wood/spritesheet_edges",
 };
 
 let WORK_DIR = "";
@@ -181,9 +184,12 @@ function isStripped(wood) {
   return wood.logBlock.startsWith("stripped_");
 }
 
-/** @param {WoodAssets} wood */
-function isTrunk(wood) {
-  return `${wood.logBlock}:is_trunk=true`;
+/**
+ * @param {WoodAssets} wood
+ * @param {boolean} value
+ */
+function isTrunk(wood, value = true) {
+  return `${wood.logBlock}:is_trunk=${value}`;
 }
 
 /** @param {WoodAssets} wood */
@@ -227,25 +233,30 @@ async function updatePropsFor(template, outfile, targetBlock) {
 }
 
 /** @param {WoodAssets[]} woodAssets */
-function updateCtmOverlays(woodAssets) {
-  const ctmOverlaysDir = `${WORK_DIR}/${DIR.ctm}/_overlays`;
-  const ctmEdgesProps = globSync(`${ctmOverlaysDir}/edges/*/*.ctm.properties`);
+function updateCtmEdges(woodAssets) {
+  const ctmEdgesDir = `${WORK_DIR}/${DIR.ctm}/_overlays/edges`;
+  const ctmEdgesProps = globSync([
+    `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
+    `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
+  ]);
 
   /** @type {{ [k: string]: (wood: WoodAssets) => string }} */
   const blockStateTransform = {
-    x: (wood) => `${wood.logBlock}:axis=x`,
-    y: (wood) => `${wood.logBlock}:axis=y`,
-    z_horizontal: (wood) => `${wood.logBlock}:axis=z`,
-    z_vertical: (wood) => `${wood.logBlock}:axis=z`,
+    x: (wood, trunk) => `${isTrunk(wood, trunk)}:axis=x`,
+    y: (wood, trunk) => `${isTrunk(wood, trunk)}:axis=y`,
+    z_horizontal: (wood, trunk) => `${isTrunk(wood, trunk)}:axis=z`,
+    z_vertical: (wood, trunk) => `${isTrunk(wood, trunk)}:axis=z`,
     wood: (wood) => wood.woodBlock,
   };
 
   for (const propsPath of ctmEdgesProps) {
-    const propsFile = propsPath.split("/").pop();
+    const [propsFile, orientationDir, ctxDir] = propsPath.split("/").reverse();
     const [overlayType] = propsFile.split(".");
 
+    const trunkOnly = ctxDir === "live_logs";
     const matchBlocks = woodAssets
-      .map(blockStateTransform[overlayType])
+      .filter((wood) => (trunkOnly ? !isStripped(wood) : true))
+      .map((wood) => blockStateTransform[overlayType]?.(wood, trunkOnly))
       .filter((block) => block?.length > 0);
 
     const otherProps = readFileSync(propsPath)
@@ -263,9 +274,8 @@ function updateCtmOverlays(woodAssets) {
 
 /** @param {WoodAssets} wood */
 async function updateAllSprites(wood) {
-  const SpriteTypes = { VARIANT: true, TOPS: false };
-
   execSync(`mkdir -p ${WORK_DIR}/${wood.type}_tmp`);
+
   await updateSprites(wood, SpriteTypes.VARIANT);
   await updateSprites(wood, SpriteTypes.TOPS);
 
@@ -275,25 +285,24 @@ async function updateAllSprites(wood) {
 
 /**
  * @param {WoodAssets} wood
- * @param {boolean} isVariantType
+ * @param {(typeof SpriteTypes)[keyof typeof SpriteTypes]} spriteType
  */
-async function updateSprites(wood, isVariantType = true) {
+async function updateSprites(wood, spriteType) {
+  const isVariantType = spriteType === SpriteTypes.VARIANT;
+
   const spritesheetDir = isVariantType ? DIR.variantSprites : DIR.topSprites;
   const blockSpriteDir = isVariantType ? wood.variantsDir : wood.topsDir;
   if (!blockSpriteDir) {
     err(`Failed to parse output directory for wood type '${wood.type}'`);
   }
 
-  const type = isVariantType ? "variants" : "tops";
-  const sceneStart = isVariantType ? 1 : 0;
-
   const spritesheets = await readdir(`${DOWNLOADS}/${spritesheetDir}`);
   if (!spritesheets.includes(`${wood.type}.png`)) {
-    warn(`Spritesheet (${type}) for wood type '${wood.type}' not found`);
+    warn(`Spritesheet (${spriteType}) for wood type '${wood.type}' not found`);
     return;
   }
   const path = `${DOWNLOADS}/${spritesheetDir}/${wood.type}.png`;
-  const convertCmd = `convert ${path} -crop 16x16 +repage -scene ${sceneStart} %d.png`;
+  const convertCmd = `convert ${path} -crop 16x16 +repage -scene ${isVariantType ? 1 : 0} %d.png`;
 
   execSync(`rm -rf ${WORK_DIR}/${wood.type}_tmp/*`);
   execSync(`cd ${WORK_DIR}/${wood.type}_tmp && ${convertCmd}`);
@@ -336,7 +345,7 @@ async function updateAll() {
   console.log(`Updating all ${EXISTING_WOOD_TYPES.length} wood types...`);
 
   const woodAssets = EXISTING_WOOD_TYPES.map((w) => getAssetsFor(w));
-  updateCtmOverlays(woodAssets);
+  updateCtmEdges(woodAssets);
 
   for (const wood of woodAssets) {
     await updateWood(wood);
