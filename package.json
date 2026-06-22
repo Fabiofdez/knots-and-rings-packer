@@ -7,7 +7,7 @@
     "wood-packer": "node utils.js"
   },
   "devDependencies": {
-    "vite": "^4.0.0"
+    "vite": "^6.4.3"
   },
   "dependencies": {
     "child_process": "^1.0.2",
