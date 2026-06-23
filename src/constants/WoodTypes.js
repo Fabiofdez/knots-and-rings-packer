@@ -1,0 +1,22 @@
+export const WoodTypes = /** @type {const} */ ({
+  VANILLA: [
+    "acacia",
+    "birch",
+    "cherry",
+    "dark_oak",
+    "jungle",
+    "mangrove",
+    "oak",
+    "pale_oak",
+    "spruce",
+    "stripped_acacia",
+    "stripped_birch",
+    "stripped_cherry",
+    "stripped_dark_oak",
+    "stripped_jungle",
+    "stripped_mangrove",
+    "stripped_oak",
+    "stripped_pale_oak",
+    "stripped_spruce",
+  ],
+});

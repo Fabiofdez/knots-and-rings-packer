@@ -3,16 +3,24 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "_moduleAliases": {
+    "@root": "src/index.js",
+    "@methods": "src/method",
+    "@const": "src/constants",
+    "@util": "src/util"
+  },
   "scripts": {
-    "wood-packer": "node utils.js"
+    "wood-packer": "node --import extensionless/register --import module-alias/register src/index.js"
   },
   "devDependencies": {
     "vite": "^6.4.3"
   },
   "dependencies": {
     "child_process": "^1.0.2",
+    "extensionless": "^2.0.6",
     "glob": "^12.0.0",
     "looks-same": "^10.0.1",
+    "module-alias": "^2.3.4",
     "prettier": "^3.3.2",
     "prettier-plugin-jsdoc": "^1.8.0",
     "prettier-plugin-organize-imports": "^4.3.0",
