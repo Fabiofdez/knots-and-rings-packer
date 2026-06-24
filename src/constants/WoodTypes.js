@@ -1,4 +1,4 @@
-export const WoodTypes = /** @type {const} */ ({
+export const WoodTypes = {
   VANILLA: [
     "acacia",
     "birch",
@@ -19,4 +19,4 @@ export const WoodTypes = /** @type {const} */ ({
     "stripped_pale_oak",
     "stripped_spruce",
   ],
-});
+};

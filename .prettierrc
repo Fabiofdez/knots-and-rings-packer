@@ -1,4 +1,5 @@
 {
   "plugins": ["prettier-plugin-organize-imports", "prettier-plugin-jsdoc"],
-  "endOfLine": "crlf"
+  "endOfLine": "crlf",
+  "overrides": [{ "files": "*.mcmeta", "options": { "tabWidth": 4 } }]
 }

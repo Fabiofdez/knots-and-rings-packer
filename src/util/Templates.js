@@ -1,12 +1,9 @@
 import { Ctx } from "@const/RunContext";
-import { WoodFacts } from "@util/Wood";
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
 /**
- * @typedef {import("@util/Wood").WoodAssets} WoodAssets
- *
- * @typedef {(wood: WoodAssets) => string} WoodPredicate
+ * @typedef {(wood: BaseWoodAssets) => string} WoodPredicate
  *
  * @typedef {{
  *   baseFile: string;
@@ -17,10 +14,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 /** @param {PropTemplate} T */
 const use = (T) => ({
-  /** @param {WoodAssets} wood */
+  /** @param {BaseWoodAssets} wood */
   updatePropsFor(wood) {
     const outFile = T.outputFor(wood);
-    execSync(`cp ${Ctx.TEMPLATES_DIR}/${T.baseFile} ${outFile}`);
+    execSync(`cp ${Ctx.WORK_DIR}/templates/${T.baseFile} ${outFile}`);
 
     const buf = readFileSync(outFile);
     const props = buf.toLocaleString();
@@ -46,7 +43,7 @@ export const Templates = {
     TOP: use({
       baseFile: "top.ctm.properties",
       outputFor: (wood) => `${wood.topsDir}/ctm.properties`,
-      targetFor: (wood) => WoodFacts.isTrunk(wood),
+      targetFor: (wood) => wood.logBlock,
     }),
   },
 };

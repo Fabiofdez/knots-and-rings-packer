@@ -2,7 +2,9 @@ import { execSync } from "node:child_process";
 import { readdirSync } from "node:fs";
 
 export const Dir = /** @type {const} */ ({
-  CTM: "assets/minecraft/optifine/ctm",
+  MINECRAFT: "assets/minecraft",
+  CTM: "optifine/ctm",
+
   DEFAULT_SPRITES: "Knotted_Wood/sprite_defaults",
   VARIANT_SPRITES: "Knotted_Wood/spritesheet_variants",
   TOP_SPRITES: "Knotted_Wood/spritesheet_tops",
@@ -11,14 +13,14 @@ export const Dir = /** @type {const} */ ({
   get(path = "") {
     let exists = false;
     let contents = [];
-  
+
     try {
       contents = readdirSync(path);
       exists = true;
     } catch (err) {
       if (!err.path) throw err;
     }
-  
+
     return {
       exists,
       contents,

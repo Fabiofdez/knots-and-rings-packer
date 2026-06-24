@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "module": "es6",
-    "moduleResolution": "node10",
-    "baseUrl": ".",
+    "module": "ES6",
+    "moduleResolution": "Bundler",
     "paths": {
-      "@root": ["src/index.js"],
-      "@methods/*": ["src/method/*"],
-      "@const/*": ["src/constants/*"],
-      "@util/*": ["src/util/*"]
+      "@root": ["./src/index.js"],
+      "@methods/*": ["./src/method/*"],
+      "@const/*": ["./src/constants/*"],
+      "@util/*": ["./src/util/*"]
     },
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src/*.js", "src/**/*.js"]
+  "include": ["./src/*.js", "./src/**/*.js", "./types.js"],
+  "exclude": ["node_modules"]
 }

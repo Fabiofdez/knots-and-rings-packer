@@ -6,10 +6,20 @@ function getOptions() {
 
   for (const opt of ARG_OPTIONS) {
     const cmds = (opt.cmds || []).join(", ");
-    const args = (opt.args || []).join("> <");
-    opts.push(`   ${cmds}  ${args.length ? `<${args}>` : ""}`);
+    const args = (opt.args || []).map(stringifyArg).join(" ");
+    opts.push(`   ${cmds}  ${args.length ? `${args}` : ""}`);
   }
+
   return `Options: \n${opts.join("\n")}\n`;
+}
+
+/** @param {import("@root").Arg | string} arg */
+function stringifyArg(arg) {
+  if (typeof arg === "string") return arg;
+  let str = arg.name;
+  if (arg.default) str += `=${arg.default}`;
+  if (arg.optional) str = `[${str}]`;
+  return str;
 }
 
 export const LOGGER = {

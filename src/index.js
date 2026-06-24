@@ -1,5 +1,7 @@
 import { Ctx } from "@const/RunContext";
+import { Zip } from "@const/ZipInfo";
 import { CTM } from "@methods/CTM";
+import { Fusion } from "@methods/Fusion";
 import { LOGGER } from "@util/Logger";
 import { Wood } from "@util/Wood";
 import { execSync } from "child_process";
@@ -9,13 +11,29 @@ const PACK_NAME = "knots-and-rings-standalone.zip";
 
 /**
  * @typedef {{
+ *   name: string;
+ *   optional?: boolean;
+ *   values?: string[];
+ *   default: string;
+ * }} Arg
+ *
+ *
+ * @typedef {{
  *   cmds: string[];
- *   args: string[] | undefined;
+ *   args?: (Arg | string)[];
  *   fn: Function;
  * }} Option
- *
- * @type {Option[]}
  */
+
+/** @type {Arg} */
+const METHOD = {
+  name: "METHOD",
+  optional: true,
+  default: "ctm",
+  values: ["ctm", "fusion"],
+};
+
+/** @type {Option[]} */
 export const ARG_OPTIONS = [
   {
     cmds: ["-h", "--help"],
@@ -23,19 +41,18 @@ export const ARG_OPTIONS = [
   },
   {
     cmds: ["-u", "--update-log"],
-    args: ["wood-type"],
-    fn: (woodType) => {
-      if (!woodType) LOGGER.errOfferHelp("Wood type must be provided");
-      CTM.updateWood(Wood.assetsCTM(woodType));
-    },
+    args: ["WOOD_TYPE", METHOD],
+    fn: (woodType, method) => updateWood(woodType, method),
   },
   {
     cmds: ["-a", "--update-all"],
-    fn: () => CTM.updateAll(),
+    args: [METHOD],
+    fn: (method) => CTM.updateAll(), // TODO: parse method
   },
   {
     cmds: ["-z", "--rezip"],
-    fn: () => rezip(),
+    args: [METHOD],
+    fn: (method) => rezip(method),
   },
 ];
 
@@ -45,15 +62,13 @@ function init() {
 
   [Ctx.WORK_DIR] = filePath.split("/src");
   if (!Ctx.WORK_DIR || !filePath.includes(THIS_FILE)) {
-    LOGGER.errOfferHelp("Failed to parse variable 'WORKDIR'");
+    LOGGER.errOfferHelp("Failed to parse variable 'WORK_DIR'");
   }
 
   Ctx.DOWNLOADS = getShellConst("DOWNLOADS");
   if (!Ctx.DOWNLOADS || Ctx.DOWNLOADS === String(undefined)) {
     LOGGER.errOfferHelp("Shell variable 'DOWNLOADS' not defined");
   }
-
-  Ctx.TEMPLATES_DIR = `${Ctx.WORK_DIR}/templates`;
 
   const opt = ARG_OPTIONS.find((opt) => opt.cmds.includes(cmd));
   if (opt) {
@@ -67,8 +82,29 @@ function getShellConst(varName) {
   return execSync(`echo \$${varName}`).toLocaleString().trim();
 }
 
-function rezip() {
-  execSync(`zip -9rq ${PACK_NAME} assets pack.*`, { cwd: Ctx.WORK_DIR });
+/**
+ * @param {string} woodType
+ * @param {"ctm" | "fusion"} method
+ */
+function updateWood(woodType, method = "ctm") {
+  if (!woodType) LOGGER.errOfferHelp("Wood type must be provided");
+
+  if (method === "fusion") {
+    Fusion.updateWood(Wood.assetsFusion(woodType));
+  } else {
+    CTM.updateWood(Wood.assetsCTM(woodType));
+  }
+}
+
+/** @param {"ctm" | "fusion"} method */
+function rezip(method = "ctm") {
+  const zipInfo = method === "fusion" ? Zip.Fusion : Zip.CTM;
+  const fileList = [...zipInfo.SRC, "pack.png"].join(" ");
+
+  execSync(`cp ${zipInfo.MCMETA} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+  execSync(`zip -9rq ${PACK_NAME} ${fileList}`, { cwd: Ctx.WORK_DIR });
+  execSync(`zip -m ${PACK_NAME} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+
   console.log("Resource Pack re-zipped!\n");
 }
 

@@ -1,48 +1,50 @@
 import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
-import { SpriteTypes } from "@const/SpriteTypes";
 import { WoodTypes } from "@const/WoodTypes";
+import { setUpDirectories } from "@methods/common";
+import { LOGGER } from "@util/Logger";
 import { SpriteMaker } from "@util/SpriteMaker";
 import { Templates } from "@util/Templates";
 import { Wood, WoodFacts } from "@util/Wood";
 import { globSync } from "glob";
-import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
-/** @typedef {import("@util/Wood").WoodAssets} WoodAssets */
-
 export const CTM = {
-  /** @param {WoodAssets} wood */
+  /** @param {WoodAssetsCTM} wood */
   async updateWood(wood) {
-    const variants = Dir.get(wood.variantsDir);
-    const tops = Dir.get(wood.topsDir);
+    setUpDirectories(wood);
 
-    if (!variants.exists && !tops.exists) {
-      console.log(`Adding new '${wood.type}' wood type...`);
-    }
-    if (!variants.exists) execSync(`mkdir -p ${wood.variantsDir}`);
-    if (!tops.exists) execSync(`mkdir -p ${wood.topsDir}`);
+    Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/ctm/${wood.type}`, async (dir) => {
+      await SpriteMaker.CTM.updateVariantSprites(dir, wood);
+      await SpriteMaker.CTM.updateTopSprites(dir, wood);
 
-    Templates.CTM.LOG.updatePropsFor(wood);
-    Templates.CTM.WOOD.updatePropsFor(wood);
-    Templates.CTM.TOP.updatePropsFor(wood);
+      if (!Ctx.NEW_WOODS?.[wood.type]) {
+        LOGGER.err(`Failed to update '${wood.type}' wood type`);
+      }
 
-    updateAllSprites(wood);
+      Templates.CTM.LOG.updatePropsFor(wood);
+      Templates.CTM.WOOD.updatePropsFor(wood);
+      Templates.CTM.TOP.updatePropsFor(wood);
+
+      console.log(`...updated '${wood.type}' wood type`);
+    });
   },
 
-  /** @param {WoodAssets[]} woodAssets */
+  /** @param {WoodAssetsCTM[]} woodAssets */
   updateEdges(woodAssets) {
-    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM}/_overlays/edges`;
+    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/${Dir.CTM}/_overlays/edges`;
     const ctmEdgesProps = globSync([
       `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
       `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
     ]);
 
+    const state = (wood, isTrunk) => `${wood.logBlock}:is_trunk=${isTrunk}`;
+
     const blockStateTransform = {
-      x: (wood, trunk) => `${WoodFacts.isTrunk(wood, trunk)}:axis=x`,
-      y: (wood, trunk) => `${WoodFacts.isTrunk(wood, trunk)}:axis=y`,
-      z_horizontal: (wood, trunk) => `${WoodFacts.isTrunk(wood, trunk)}:axis=z`,
-      z_vertical: (wood, trunk) => `${WoodFacts.isTrunk(wood, trunk)}:axis=z`,
+      x: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=x`,
+      y: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=y`,
+      z_horizontal: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=z`,
+      z_vertical: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=z`,
       wood: (wood) => wood.woodBlock,
     };
 
@@ -80,13 +82,3 @@ export const CTM = {
     }
   },
 };
-
-/** @param {WoodAssets} wood */
-function updateAllSprites(wood) {
-  Dir.makeTemp(`${Ctx.WORK_DIR}/${wood.type}_tmp`, async (dir) => {
-    await SpriteMaker.updateCtm(dir, wood, SpriteTypes.VARIANT);
-    await SpriteMaker.updateCtm(dir, wood, SpriteTypes.TOPS);
-
-    console.log(`...updated '${wood.type}' wood type`);
-  });
-}

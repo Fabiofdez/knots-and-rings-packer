@@ -8,5 +8,8 @@
             "min_inclusive": 15,
             "max_inclusive": 88
         }
+    },
+    "fusion": {
+        "min_version": "1.2.0"
     }
 }
