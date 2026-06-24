@@ -165,8 +165,7 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     updateTopSprites(tmpDir, wood) {
-      execSync(`rm -f ${tmpDir}/*`);
-      const { Sprites, Third, MergeOpts } = FusionTop;
+      execSync(`rm -f ${tmpDir}/*.png`);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.TOP_SPRITES}`;
       if (!hasSpritesheet(spritesPath, SpriteType.TOPS, wood)) return;
@@ -174,6 +173,7 @@ export const SpriteMaker = {
       const original = `${spritesPath}/${wood.type}.png`;
       split({ cwd: tmpDir }, original, scene(0));
 
+      const { Sprites, Third, MergeOpts } = FusionTop;
       join({ cwd: tmpDir }, Sprites.TOP, Third.TOP, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.MIDDLE, Third.MIDDLE, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.BOTTOM, Third.BOTTOM, ...MergeOpts.PART);
@@ -183,7 +183,7 @@ export const SpriteMaker = {
       join({ cwd: tmpDir }, Sprites.THIRDS(), outPath, ...MergeOpts.FINAL);
 
       cleanDir({ cwd: tmpDir }, outFile);
-      execSync(`mkdir -p out/ && mv *.png *.mcmeta out/`, { cwd: tmpDir });
+      execSync(`mkdir -p out/ && mv *.png out/`, { cwd: tmpDir });
     },
 
     /**
@@ -191,8 +191,7 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     updateVariantSprites(tmpDir, wood) {
-      execSync(`rm -f ${tmpDir}/*`);
-      const { Sprites, MergeOpts } = FusionVariants;
+      execSync(`rm -f ${tmpDir}/*.png`);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
       if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
@@ -203,11 +202,13 @@ export const SpriteMaker = {
 
       const outFile = `${wood.logBlock}.png`;
       const outPath = `${tmpDir}/${outFile}`;
+
+      const { Sprites, MergeOpts } = FusionVariants;
       join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
 
       cleanDir({ cwd: tmpDir }, outFile);
       execSync(`cp ${outFile} ${wood.woodBlock}.png`, { cwd: tmpDir });
-      execSync(`mkdir -p out/ && mv *.png *.mcmeta out/`, { cwd: tmpDir });
+      execSync(`mkdir -p out/ && mv *.png out/`, { cwd: tmpDir });
     },
 
     /**
@@ -215,10 +216,12 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     async collectNewAssets(tmpDir, wood) {
-      /** @type {typeof defaultMask} */
-      const mask = (file) => file.startsWith(wood.type) && defaultMask(file);
+      execSync(`mv out/* .`, { cwd: tmpDir });
 
-      await filterChangedSprites(tmpDir, wood.topsDir, mask);
+      /** @type {typeof isPNG} */
+      const mask = (file) => isPNG(file) && file.startsWith(wood.type);
+
+      await filterChangedSprites(tmpDir, wood.texturesDir, mask);
     },
   },
 };
@@ -256,7 +259,7 @@ function cleanDir(cmdOpts, file) {
   execSync(`find . -maxdepth 1 -type f -not -name ${file} -delete`, cmdOpts);
 }
 
-async function filterChangedSprites(tmpDir, destDir, mask = defaultMask) {
+async function filterChangedSprites(tmpDir, destDir, mask = isPNG) {
   const existingSprites = readdirSync(`${destDir}`);
   const tmpSprites = readdirSync(`${tmpDir}`);
 
@@ -270,6 +273,8 @@ async function filterChangedSprites(tmpDir, destDir, mask = defaultMask) {
     .forEach((sprite) => cleanDest(sprite));
 
   for (const sprite of tmpSprites) {
+    if (!isPNG(sprite)) continue;
+
     const tmpSprite = `${tmpDir}/${sprite}`;
     const oldPath = `${destDir}/${sprite}`;
 
@@ -287,6 +292,6 @@ async function filterChangedSprites(tmpDir, destDir, mask = defaultMask) {
 }
 
 /** @param {string} file */
-function defaultMask(file) {
+function isPNG(file) {
   return extname(file) === ".png";
 }

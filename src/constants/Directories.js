@@ -1,5 +1,4 @@
 import { execSync } from "node:child_process";
-import { readdirSync } from "node:fs";
 
 export const Dir = /** @type {const} */ ({
   MINECRAFT: "assets/minecraft",
@@ -9,24 +8,6 @@ export const Dir = /** @type {const} */ ({
   VARIANT_SPRITES: "Knotted_Wood/spritesheet_variants",
   TOP_SPRITES: "Knotted_Wood/spritesheet_tops",
   EDGE_SPRITES: "Knotted_Wood/spritesheet_edges",
-
-  get(path = "") {
-    let exists = false;
-    let contents = [];
-
-    try {
-      contents = readdirSync(path);
-      exists = true;
-    } catch (err) {
-      if (!err.path) throw err;
-    }
-
-    return {
-      exists,
-      contents,
-      path,
-    };
-  },
 
   /**
    * @param {string} tmpDir

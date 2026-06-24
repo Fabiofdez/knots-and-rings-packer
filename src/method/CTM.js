@@ -1,24 +1,27 @@
 import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
-import { setUpDirectories } from "@methods/common";
+import { markToUpdate } from "@methods/common";
 import { LOGGER } from "@util/Logger";
 import { SpriteMaker } from "@util/SpriteMaker";
 import { Templates } from "@util/Templates";
 import { Wood, WoodFacts } from "@util/Wood";
 import { globSync } from "glob";
-import { readFileSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 export const CTM = {
   /** @param {WoodAssetsCTM} wood */
   async updateWood(wood) {
-    setUpDirectories(wood);
+    setUpDirs(wood);
 
     Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/ctm/${wood.type}`, async (dir) => {
       await SpriteMaker.CTM.updateVariantSprites(dir, wood);
       await SpriteMaker.CTM.updateTopSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.type]) {
+        removeDirs(wood);
+        execSync(`rm -rf ${dir}`);
         LOGGER.err(`Failed to update '${wood.type}' wood type`);
       }
 
@@ -82,3 +85,23 @@ export const CTM = {
     }
   },
 };
+
+/** @param {WoodAssetsCTM} wood */
+function setUpDirs(wood) {
+  const variants = existsSync(wood.variantsDir);
+  const tops = existsSync(wood.topsDir);
+
+  if (!variants && !tops) {
+    console.log(`Adding new '${wood.type}' wood type...`);
+  }
+  if (!variants) execSync(`mkdir -p ${wood.variantsDir}`);
+  if (!tops) execSync(`mkdir -p ${wood.topsDir}`);
+
+  markToUpdate(wood);
+}
+
+/** @param {WoodAssetsCTM} wood */
+function removeDirs(wood) {
+  if (existsSync(wood.variantsDir)) execSync(`rm -rf ${wood.variantsDir}`);
+  if (existsSync(wood.topsDir)) execSync(`rm -rf ${wood.topsDir}`);
+}

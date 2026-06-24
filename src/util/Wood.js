@@ -31,8 +31,7 @@ export const Wood = {
   assetsFusion(woodType) {
     return /** @type {const} */ ({
       ...baseAssets(woodType),
-      variantsDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/textures/block`,
-      topsDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/textures/block`,
+      texturesDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/textures/block`,
     });
   },
 };
