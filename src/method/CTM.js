@@ -13,11 +13,12 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 export const CTM = {
   /** @param {WoodAssetsCTM} wood */
   async updateWood(wood) {
-    setUpDirs(wood);
+    const isStripped = WoodFacts.isStripped(wood);
+    setUpDirs(wood, isStripped);
 
     Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/ctm/${wood.type}`, async (dir) => {
       await SpriteMaker.CTM.updateVariantSprites(dir, wood);
-      await SpriteMaker.CTM.updateTopSprites(dir, wood);
+      if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.type]) {
         removeDirs(wood);
@@ -27,7 +28,7 @@ export const CTM = {
 
       Templates.CTM.LOG.updatePropsFor(wood);
       Templates.CTM.WOOD.updatePropsFor(wood);
-      Templates.CTM.TOP.updatePropsFor(wood);
+      if (!isStripped) Templates.CTM.TOP.updatePropsFor(wood);
 
       console.log(`...updated '${wood.type}' wood type`);
     });
@@ -86,8 +87,11 @@ export const CTM = {
   },
 };
 
-/** @param {WoodAssetsCTM} wood */
-function setUpDirs(wood) {
+/**
+ * @param {WoodAssetsCTM} wood
+ * @param {boolean} isStripped
+ */
+function setUpDirs(wood, isStripped) {
   const variants = existsSync(wood.variantsDir);
   const tops = existsSync(wood.topsDir);
 
@@ -95,7 +99,8 @@ function setUpDirs(wood) {
     console.log(`Adding new '${wood.type}' wood type...`);
   }
   if (!variants) execSync(`mkdir -p ${wood.variantsDir}`);
-  if (!tops) execSync(`mkdir -p ${wood.topsDir}`);
+  if (!isStripped && !tops) execSync(`mkdir -p ${wood.topsDir}`);
+  if (isStripped && tops) execSync(`rm -rf ${wood.topsDir}`);
 
   markToUpdate(wood);
 }
