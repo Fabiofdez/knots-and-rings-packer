@@ -32,6 +32,7 @@ export const Wood = {
     return /** @type {const} */ ({
       ...baseAssets(woodType),
       texturesDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/textures/block`,
+      modifiersDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/fusion/model_modifiers/blocks`,
     });
   },
 };

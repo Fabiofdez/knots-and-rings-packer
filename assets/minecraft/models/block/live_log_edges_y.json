@@ -1,0 +1,6 @@
+{
+  "parent": "block/log_edges_y",
+  "textures": {
+    "side": "minecraft:block/live_log_edges"
+  }
+}

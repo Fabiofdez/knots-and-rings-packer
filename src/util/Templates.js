@@ -3,18 +3,30 @@ import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
 /**
- * @typedef {(wood: BaseWoodAssets) => string} WoodPredicate
- *
- * @typedef {{
- *   baseFile: string;
- *   outputFor: WoodPredicate;
- *   targetFor: WoodPredicate;
- * }} PropTemplate
+ * @template T
+ * @typedef {(wood: T) => string} WoodPredicate
  */
 
-/** @param {PropTemplate} T */
+/**
+ * @template T
+ * @typedef {{
+ *   baseFile: string;
+ *   outputFor: WoodPredicate<T>;
+ *   targetFor: WoodPredicate<T>;
+ * }} PropTemplate
+ */
+/**
+ * @template T
+ * @typedef {(thisProps: PropTemplate<T>) => {
+ *   updatePropsFor: (wood: T) => void;
+ * }} TemplateDef
+ */
+
+/**
+ * @typedef {WoodAssetsCTM & WoodAssetsFusion} WoodAssets
+ * @type {TemplateDef<WoodAssets>}
+ */
 const use = (T) => ({
-  /** @param {BaseWoodAssets} wood */
   updatePropsFor(wood) {
     const outFile = T.outputFor(wood);
     execSync(`cp ${Ctx.WORK_DIR}/templates/${T.baseFile} ${outFile}`);
@@ -46,4 +58,24 @@ export const Templates = {
       targetFor: (wood) => wood.logBlock,
     }),
   },
+
+  Fusion: {
+    LOG: use({
+      baseFile: "variants.png.mcmeta",
+      outputFor: (wood) => `${wood.texturesDir}/${wood.logBlock}.png.mcmeta`,
+      targetFor: () => null,
+    }),
+
+    WOOD: use({
+      baseFile: "variants.png.mcmeta",
+      outputFor: (wood) => `${wood.texturesDir}/${wood.woodBlock}.png.mcmeta`,
+      targetFor: () => null,
+    }),
+
+    TOP: use({
+      baseFile: "top.png.mcmeta",
+      outputFor: (wood) => `${wood.texturesDir}/${wood.logBlock}_top.png.mcmeta`,
+      targetFor: (wood) => wood.logBlock,
+    }),
+  }
 };

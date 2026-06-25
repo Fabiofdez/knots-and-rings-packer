@@ -1,0 +1,41 @@
+{
+  "targets": [
+    {
+      "block": "acacia_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "birch_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "cherry_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "dark_oak_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "jungle_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "mangrove_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "oak_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "pale_oak_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    },
+    {
+      "block": "spruce_log",
+      "properties": { "is_trunk": "true", "axis": "y" }
+    }
+  ],
+  "append_models": ["minecraft:block/live_log_edges_y"]
+}

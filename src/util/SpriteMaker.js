@@ -1,7 +1,9 @@
 import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { SpriteType } from "@const/SpriteTypes";
+import { WoodTypes } from "@const/WoodTypes";
 import { LOGGER } from "@util/Logger";
+import { Wood } from "@util/Wood";
 import looksSame from "looks-same";
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
@@ -22,7 +24,7 @@ function tile({ rows = 0, cols = 0 }) {
   return `-tile ${cols}x${rows}`;
 }
 
-function geo({ w = 0, h = 0, size = 0 }) {
+function geo({ w = 16, h = 16, size = 0 }) {
   if (size) return `-geometry ${size}x${size}`;
   if (w && h) return `-geometry ${w}x${h}`;
   return "";
@@ -33,12 +35,14 @@ function scene(start = 0) {
 }
 
 function copy(file = "", count = 1) {
-  if (file && count) return new Array(count).fill(file);
-  return [];
+  if (file && count) return `${file} -duplicate ${count - 1}`;
+  return "";
 }
 
 function pngs(...numFiles) {
-  return numFiles.map((num) => `${num}.png`).join(" ");
+  return numFiles
+    .map((num) => (num === null ? "null:" : `${num}.png`))
+    .join(" ");
 }
 
 /**
@@ -79,47 +83,59 @@ function join(cmdOpts, spriteFiles, outputFile, ...opts) {
   execSync(`montage ${args}`, cmdOpts);
 }
 
-const FusionTop = {
-  Third: {
-    TOP: "top_third.png",
-    MIDDLE: "middle_third.png",
-    BOTTOM: "bottom_third.png",
-  },
+const FusionRemaps = {
+  TOP: {
+    Third: {
+      TOP: "top_third.png",
+      MIDDLE: "middle_third.png",
+      BOTTOM: "bottom_third.png",
+    },
 
-  Sprites: {
-    TOP: "[0-7].png 1[2-9].png",
-    MIDDLE: `2[4-7].png ${pngs(30, 31, 28, 29)} 3[6-9].png ${pngs(42, 43, 40, 41)}`,
-    BOTTOM: `${pngs(34, 46, 23, 22, 9, 21, 32, 33, 35, 47, 11, 10, 8, 20, 44, 45)}`,
+    Sprites: {
+      TOP: "[0-7].png 1[2-9].png",
+      MIDDLE: `2[4-7].png ${pngs(30, 31, 28, 29)} 3[6-9].png ${pngs(42, 43, 40, 41)}`,
+      BOTTOM: `${pngs(34, 46, 23, 22, 9, 21, 32, 33, 35, 47, 11, 10, 8, 20, 44, 45)}`,
 
-    THIRDS() {
-      return Object.values(FusionTop.Third).join(" ");
+      THIRDS() {
+        return Object.values(FusionRemaps.TOP.Third).join(" ");
+      },
+    },
+
+    MergeOpts: {
+      PART: [tile({ cols: 8 }), geo({ size: 16 })],
+      FINAL: [tile({ rows: 3 }), geo({ w: 128, h: 32 })],
     },
   },
 
-  MergeOpts: {
-    PART: [tile({ cols: 8 }), geo({ size: 16 })],
-    FINAL: [tile({ rows: 3 }), geo({ w: 128, h: 32 })],
+  VARIANTS: {
+    Sprites: [
+      copy("0.png", 50),
+      copy("1.png", 20),
+      copy("2.png", 5),
+      copy("3.png", 5),
+      copy("4.png", 5),
+      copy("5.png", 5),
+      copy("6.png", 5),
+      copy("7.png", 5),
+      "8.png",
+      "9.png",
+      "10.png",
+      "11.png",
+      "12.png",
+    ].join(" "),
+
+    MergeOpts: [tile({ cols: 15 }), geo({ size: 16 })],
   },
-};
 
-const FusionVariants = {
-  Sprites: [
-    ...copy("0.png", 50),
-    ...copy("1.png", 20),
-    ...copy("2.png", 5),
-    ...copy("3.png", 5),
-    ...copy("4.png", 5),
-    ...copy("5.png", 5),
-    ...copy("6.png", 5),
-    ...copy("7.png", 5),
-    "8.png",
-    "9.png",
-    "10.png",
-    "11.png",
-    "12.png",
-  ].join(" "),
+  LOG_EDGES: {
+    Sprites: pngs(0, null, 0, 2, null, 0, 1, 0, 1, null, 1, 2, null, 2, 1, 2),
+    MergeOpts: [tile({ cols: 4 }), geo({ size: 16 })],
+  },
 
-  MergeOpts: [tile({ cols: 15 }), geo({ size: 16 })],
+  WOOD_EDGES: {
+    Sprites: pngs(0, null, 12, 3, 2, 24, 1, 36, 6, 7, 4, 5, 18, 19, 16, 17),
+    MergeOpts: [tile({ cols: 4 }), geo({ size: 16 })],
+  },
 };
 
 export const SpriteMaker = {
@@ -165,7 +181,7 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     updateTopSprites(tmpDir, wood) {
-      execSync(`rm -f ${tmpDir}/*.png`);
+      clearPNGs(tmpDir);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.TOP_SPRITES}`;
       if (!hasSpritesheet(spritesPath, SpriteType.TOPS, wood)) return;
@@ -173,7 +189,7 @@ export const SpriteMaker = {
       const original = `${spritesPath}/${wood.type}.png`;
       split({ cwd: tmpDir }, original, scene(0));
 
-      const { Sprites, Third, MergeOpts } = FusionTop;
+      const { Sprites, Third, MergeOpts } = FusionRemaps.TOP;
       join({ cwd: tmpDir }, Sprites.TOP, Third.TOP, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.MIDDLE, Third.MIDDLE, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.BOTTOM, Third.BOTTOM, ...MergeOpts.PART);
@@ -191,7 +207,7 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     updateVariantSprites(tmpDir, wood) {
-      execSync(`rm -f ${tmpDir}/*.png`);
+      clearPNGs(tmpDir);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
       if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
@@ -203,12 +219,50 @@ export const SpriteMaker = {
       const outFile = `${wood.logBlock}.png`;
       const outPath = `${tmpDir}/${outFile}`;
 
-      const { Sprites, MergeOpts } = FusionVariants;
+      const { Sprites, MergeOpts } = FusionRemaps.VARIANTS;
       join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
 
       cleanDir({ cwd: tmpDir }, outFile);
       execSync(`cp ${outFile} ${wood.woodBlock}.png`, { cwd: tmpDir });
       execSync(`mkdir -p out/ && mv *.png out/`, { cwd: tmpDir });
+    },
+
+    /** @param {string} tmpDir */
+    async updateLogEdgeSprites(tmpDir) {
+      clearPNGs(tmpDir);
+
+      const ctmDir = `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/${Dir.CTM}`;
+      const edgesDirCTM = `${ctmDir}/_overlays/edges/live_logs/logs_vertical`;
+      execSync(`cp [0-2].png ${tmpDir}/`, { cwd: edgesDirCTM });
+
+      const outFile = "log_edges.png";
+      const outPath = `${tmpDir}/${outFile}`;
+      const destDir = Wood.assetsFusion(WoodTypes.VANILLA[0]).texturesDir;
+
+      const { Sprites, MergeOpts } = FusionRemaps.LOG_EDGES;
+      join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
+
+      cleanDir({ cwd: tmpDir }, outFile);
+      await filterChangedSprites(tmpDir, destDir, (file) => file === outFile);
+    },
+
+    /** @param {string} tmpDir */
+    async updateWoodEdgeSprites(tmpDir) {
+      clearPNGs(tmpDir);
+
+      const spritesPath = `${Ctx.DOWNLOADS}/${Dir.EDGE_SPRITES}`;
+      const spritesheet = `${spritesPath}/edges-wood.png`;
+      split({ cwd: tmpDir }, spritesheet, scene(0));
+
+      const outFile = "wood_edges.png";
+      const outPath = `${tmpDir}/${outFile}`;
+      const destDir = Wood.assetsFusion(WoodTypes.VANILLA[0]).texturesDir;
+
+      const { Sprites, MergeOpts } = FusionRemaps.WOOD_EDGES;
+      join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
+
+      cleanDir({ cwd: tmpDir }, outFile);
+      await filterChangedSprites(tmpDir, destDir, (file) => file === outFile);
     },
 
     /**
@@ -257,6 +311,10 @@ function addDefaultSprite(dir, wood) {
 /** @param {Parameters<typeof execSync>[1]} cmdOpts */
 function cleanDir(cmdOpts, file) {
   execSync(`find . -maxdepth 1 -type f -not -name ${file} -delete`, cmdOpts);
+}
+
+function clearPNGs(dir) {
+  execSync(`rm -f ${dir}/*.png`);
 }
 
 async function filterChangedSprites(tmpDir, destDir, mask = isPNG) {

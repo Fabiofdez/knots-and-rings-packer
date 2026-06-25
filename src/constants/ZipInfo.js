@@ -5,7 +5,11 @@ export const Zip = {
   },
 
   Fusion: {
-    SRC: ["assets/minecraft/textures"],
+    SRC: [
+      "assets/minecraft/textures",
+      "assets/minecraft/models",
+      "assets/minecraft/fusion",
+    ],
     MCMETA: "fusion.pack.mcmeta",
   },
 };

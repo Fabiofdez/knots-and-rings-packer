@@ -42,6 +42,10 @@ export const CTM = {
       `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
     ]);
 
+    /**
+     * @param {WoodAssetsCTM} wood
+     * @param {boolean} isTrunk
+     */
     const state = (wood, isTrunk) => `${wood.logBlock}:is_trunk=${isTrunk}`;
 
     const blockStateTransform = {

@@ -47,7 +47,7 @@ export const ARG_OPTIONS = [
   {
     cmds: ["-a", "--update-all"],
     args: [METHOD],
-    fn: (method) => CTM.updateAll(), // TODO: parse method
+    fn: (method) => updateAll(method),
   },
   {
     cmds: ["-z", "--rezip"],
@@ -94,6 +94,11 @@ function updateWood(woodType, method = "ctm") {
   } else {
     CTM.updateWood(Wood.assetsCTM(woodType));
   }
+}
+
+function updateAll(method = "ctm") {
+  if (method === "fusion") Fusion.updateAll();
+  else CTM.updateAll();
 }
 
 /** @param {"ctm" | "fusion"} method */

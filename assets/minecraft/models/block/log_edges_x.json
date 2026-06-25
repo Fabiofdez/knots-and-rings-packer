@@ -1,0 +1,17 @@
+{
+  "textures": {
+    "side": "minecraft:block/log_edges"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "down": { "texture": "#side", "rotation": 90, "cullface": "down" },
+        "up": { "texture": "#side", "rotation": 90, "cullface": "up" },
+        "north": { "texture": "#side", "rotation": 90, "cullface": "north" },
+        "south": { "texture": "#side", "rotation": 90, "cullface": "south" }
+      }
+    }
+  ]
+}

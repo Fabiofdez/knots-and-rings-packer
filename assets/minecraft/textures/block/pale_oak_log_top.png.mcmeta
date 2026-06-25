@@ -1,0 +1,19 @@
+{
+    "fusion": {
+        "type": "connecting",
+        "layout": "full",
+        "connections": {
+            "type": "and",
+            "predicates": [
+                { "type": "is_same_state" },
+                {
+                    "type": "match_state",
+                    "block": "pale_oak_log",
+                    "properties": {
+                        "is_trunk": "true"
+                    }
+                }
+            ]
+        }
+    }
+}

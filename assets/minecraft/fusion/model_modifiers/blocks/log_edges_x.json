@@ -1,0 +1,77 @@
+{
+  "targets": [
+    {
+      "block": "acacia_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "birch_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "cherry_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "dark_oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "jungle_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "mangrove_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "pale_oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "spruce_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_acacia_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_birch_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_cherry_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_dark_oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_jungle_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_mangrove_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_pale_oak_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    },
+    {
+      "block": "stripped_spruce_log",
+      "properties": { "is_trunk": "false", "axis": "x" }
+    }
+  ],
+  "append_models": ["minecraft:block/log_edges_x"]
+}
