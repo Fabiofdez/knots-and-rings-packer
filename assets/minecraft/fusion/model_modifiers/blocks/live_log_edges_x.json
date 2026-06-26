@@ -37,5 +37,6 @@
       "properties": { "is_trunk": "true", "axis": "x" }
     }
   ],
+  "ignore_missing_targets": true,
   "append_models": ["minecraft:block/live_log_edges_x"]
 }

@@ -7,7 +7,6 @@ import { Wood } from "@util/Wood";
 import { execSync } from "child_process";
 
 const THIS_FILE = "index.js";
-const PACK_NAME = "knots-and-rings-standalone.zip";
 
 /**
  * @typedef {{
@@ -107,8 +106,8 @@ function rezip(method = "ctm") {
   const fileList = [...zipInfo.SRC, "pack.png"].join(" ");
 
   execSync(`cp ${zipInfo.MCMETA} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
-  execSync(`zip -9rq ${PACK_NAME} ${fileList}`, { cwd: Ctx.WORK_DIR });
-  execSync(`zip -m ${PACK_NAME} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+  execSync(`zip -9rq ${zipInfo.PACK_NAME} ${fileList}`, { cwd: Ctx.WORK_DIR });
+  execSync(`zip -m ${zipInfo.PACK_NAME} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
 
   console.log("Resource Pack re-zipped!\n");
 }

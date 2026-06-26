@@ -60,7 +60,7 @@ export const CTM = {
       const [propsFile, _, ctxDir] = propsPath.split("/").reverse();
       const [overlayType] = propsFile.split(".");
 
-      const trunkOnly = ctxDir === "live_logs";
+      const trunkOnly = ctxDir === "live_logs" && overlayType !== "wood";
       const matchBlocks = woodAssets
         .filter((wood) => (trunkOnly ? !WoodFacts.isStripped(wood) : true))
         .map((wood) => blockStateTransform[overlayType]?.(wood, trunkOnly))

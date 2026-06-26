@@ -9,6 +9,7 @@
                 {
                     "type": "match_state",
                     "block": "mangrove_log",
+                    "ignore_missing": true,
                     "properties": {
                         "is_trunk": "true"
                     }

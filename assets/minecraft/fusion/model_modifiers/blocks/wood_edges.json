@@ -19,5 +19,6 @@
     "stripped_pale_oak_wood",
     "stripped_spruce_wood"
   ],
+  "ignore_missing_targets": true,
   "append_models": ["minecraft:block/wood_edges"]
 }
