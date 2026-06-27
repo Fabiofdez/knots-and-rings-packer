@@ -11,8 +11,8 @@ import { readFileSync, writeFileSync } from "node:fs";
  * @template T
  * @typedef {{
  *   baseFile: string;
- *   outputFor: WoodPredicate<T>;
- *   targetFor: WoodPredicate<T>;
+ *   output: WoodPredicate<T>;
+ *   modifyTarget: WoodPredicate<T>;
  * }} PropTemplate
  */
 /**
@@ -28,13 +28,15 @@ import { readFileSync, writeFileSync } from "node:fs";
  */
 const use = (T) => ({
   updatePropsFor(wood) {
-    const outFile = T.outputFor(wood);
+    const outFile = T.output(wood);
     execSync(`cp ${Ctx.WORK_DIR}/templates/${T.baseFile} ${outFile}`);
 
-    const buf = readFileSync(outFile);
-    const props = buf.toLocaleString();
-    const updated = props.replace(/TEMPLATE_BLOCK/g, T.targetFor(wood));
-    writeFileSync(outFile, updated);
+    if (typeof T.modifyTarget !== "function") return;
+
+    let content = readFileSync(outFile).toLocaleString();
+    content = content.replace(/TEMPLATE_BLOCK/g, T.modifyTarget(wood));
+
+    writeFileSync(outFile, content);
   },
 });
 
@@ -42,40 +44,38 @@ export const Templates = {
   CTM: {
     LOG: use({
       baseFile: "template_log.properties",
-      outputFor: (wood) => `${wood.variantsDir}/log.properties`,
-      targetFor: (wood) => wood.logBlock,
+      output: (wood) => `${wood.variantsDir}/log.properties`,
+      modifyTarget: (wood) => wood.logBlock,
     }),
 
     WOOD: use({
       baseFile: "template_wood.properties",
-      outputFor: (wood) => `${wood.variantsDir}/wood.properties`,
-      targetFor: (wood) => wood.woodBlock,
+      output: (wood) => `${wood.variantsDir}/wood.properties`,
+      modifyTarget: (wood) => wood.woodBlock,
     }),
 
     TOP: use({
       baseFile: "top.ctm.properties",
-      outputFor: (wood) => `${wood.topsDir}/ctm.properties`,
-      targetFor: (wood) => wood.logBlock,
+      output: (wood) => `${wood.topsDir}/ctm.properties`,
+      modifyTarget: (wood) => wood.logBlock,
     }),
   },
 
   Fusion: {
     LOG: use({
       baseFile: "variants.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.logAsset}.png.mcmeta`,
-      targetFor: () => null,
+      output: (wood) => `${wood.texturesDir}/${wood.logAsset}.png.mcmeta`,
     }),
 
     WOOD: use({
       baseFile: "variants.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.woodAsset}.png.mcmeta`,
-      targetFor: () => null,
+      output: (wood) => `${wood.texturesDir}/${wood.woodAsset}.png.mcmeta`,
     }),
 
     TOP: use({
       baseFile: "top.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.logAsset}_top.png.mcmeta`,
-      targetFor: (wood) => wood.logBlock,
+      output: (wood) => `${wood.texturesDir}/${wood.logAsset}_top.png.mcmeta`,
+      modifyTarget: (w) => w.logBlock,
     }),
-  }
+  },
 };

@@ -110,8 +110,6 @@ export const Fusion = {
     saveModifierSet((axis) => `live_log_edges_${axis}.json`, targets.LIVE_LOG);
     saveModifierSet((axis) => `log_edges_${axis}.json`, targets.CHOPPED_LOG);
     saveModifier("wood_edges.json", targets.WOOD);
-
-    // TODO: save wood targets
   },
 
   updateAll() {
