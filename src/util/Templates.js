@@ -62,19 +62,19 @@ export const Templates = {
   Fusion: {
     LOG: use({
       baseFile: "variants.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.logBlock}.png.mcmeta`,
+      outputFor: (wood) => `${wood.texturesDir}/${wood.logAsset}.png.mcmeta`,
       targetFor: () => null,
     }),
 
     WOOD: use({
       baseFile: "variants.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.woodBlock}.png.mcmeta`,
+      outputFor: (wood) => `${wood.texturesDir}/${wood.woodAsset}.png.mcmeta`,
       targetFor: () => null,
     }),
 
     TOP: use({
       baseFile: "top.png.mcmeta",
-      outputFor: (wood) => `${wood.texturesDir}/${wood.logBlock}_top.png.mcmeta`,
+      outputFor: (wood) => `${wood.texturesDir}/${wood.logAsset}_top.png.mcmeta`,
       targetFor: (wood) => wood.logBlock,
     }),
   }

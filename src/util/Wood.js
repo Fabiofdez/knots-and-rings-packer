@@ -2,37 +2,37 @@ import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
 
+export const Namespace = {
+  VANILLA: "minecraft",
+  REGIONS_UNEXPLORED: "regions_unexplored",
+};
+
 /**
  * @typedef {ReturnType<typeof baseAssets>} BaseWoodAssets
  *
  * @typedef {(typeof WoodTypes.VANILLA)[number]} WoodType
  */
 
-/** @param {WoodType} woodType */
-function baseAssets(woodType) {
-  return /** @type {const} */ ({
-    type: woodType,
-    logBlock: `${woodType}_log`,
-    woodBlock: `${woodType}_wood`,
-  });
-}
-
 export const Wood = {
-  /** @param {WoodType} woodType */
-  assetsCTM(woodType) {
+  /** @param {WoodType} id */
+  assetsCTM(id) {
+    const base = baseAssets(id);
+
     return /** @type {const} */ ({
-      ...baseAssets(woodType),
-      variantsDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/${Dir.CTM}/${woodType}`,
-      topsDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/${Dir.CTM}/_overlays/${woodType}_log_top`,
+      ...base,
+      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM}/${base.assetPath}`,
+      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM}/_overlays/${base.assetPath}_log_top`,
     });
   },
 
-  /** @param {WoodType} woodType */
-  assetsFusion(woodType) {
+  /** @param {WoodType} id */
+  assetsFusion(id) {
+    const base = baseAssets(id);
+
     return /** @type {const} */ ({
-      ...baseAssets(woodType),
-      texturesDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/textures/block`,
-      modifiersDir: `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/fusion/model_modifiers/blocks`,
+      ...base,
+      texturesDir: `${Ctx.WORK_DIR}/${Dir.FUSION.textures(base.namespace)}/block`,
+      modifiersDir: `${Ctx.WORK_DIR}/${Dir.FUSION.modelModifiers(base.namespace)}/blocks`,
     });
   },
 };
@@ -48,6 +48,25 @@ export const WoodFacts = {
 
   /** @param {BaseWoodAssets} wood */
   isStripped(wood) {
-    return wood.logBlock.startsWith("stripped_");
+    return wood.logBlock.includes("stripped");
   },
 };
+
+/** @param {WoodType} id */
+function baseAssets(id) {
+  const [path, namespace = Namespace.VANILLA] = id.split(":").reverse();
+  let assetPath = `${namespace}/${path}`;
+  if (namespace === Namespace.VANILLA) assetPath = path;
+
+  return /** @type {const} */ ({
+    type: path,
+    namespace,
+    logBlock: `${id}_log`,
+    woodBlock: `${id}_wood`,
+
+    id,
+    assetPath,
+    logAsset: `${path}_log`,
+    woodAsset: `${path}_wood`,
+  });
+}

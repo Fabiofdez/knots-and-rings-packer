@@ -1,8 +1,14 @@
+import { Namespace } from "@util/Wood";
 import { execSync } from "node:child_process";
 
 export const Dir = /** @type {const} */ ({
-  MINECRAFT: "assets/minecraft",
-  CTM: "optifine/ctm",
+  CTM: "assets/minecraft/optifine/ctm",
+  FUSION: {
+    textures: (namespace = Namespace.VANILLA) =>
+      /** @type {const} */ (`assets/${namespace}/textures`),
+    modelModifiers: (namespace = Namespace.VANILLA) =>
+      /** @type {const} */ (`assets/${namespace}/fusion/model_modifiers`),
+  },
 
   DEFAULT_SPRITES: "Knotted_Wood/sprite_defaults",
   VARIANT_SPRITES: "Knotted_Wood/spritesheet_variants",

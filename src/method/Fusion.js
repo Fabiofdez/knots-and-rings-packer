@@ -16,14 +16,16 @@ const formatOpts = { parser: "json", printWidth: 60 };
 export const Fusion = {
   /** @param {WoodAssetsFusion} wood */
   async updateWood(wood) {
+    const path = `${Ctx.WORK_DIR}/tmp/fusion/${wood.assetPath}`;
+
     const isStripped = WoodFacts.isStripped(wood);
     setUpDirs(wood);
 
-    Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/${wood.type}`, async (dir) => {
+    Dir.makeTemp(path, async (dir) => {
       SpriteMaker.Fusion.updateVariantSprites(dir, wood);
       if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
 
-      if (!Ctx.NEW_WOODS?.[wood.type]) {
+      if (!Ctx.NEW_WOODS?.[wood.id]) {
         execSync(`rm -rf ${dir}`);
         LOGGER.err(`Failed to update '${wood.type}' wood type`);
       }
@@ -115,7 +117,8 @@ export const Fusion = {
   updateAll() {
     console.log(`Updating all ${WoodTypes.VANILLA.length} wood types...`);
 
-    const woodAssets = WoodTypes.VANILLA.map((wood) => Wood.assetsFusion(wood));
+    const allWoods = [...WoodTypes.VANILLA]; // TODO: pack compat resources separately?
+    const woodAssets = allWoods.map((wood) => Wood.assetsFusion(wood));
     Fusion.updateEdges(woodAssets);
 
     // Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/edges`, async (dir) => {

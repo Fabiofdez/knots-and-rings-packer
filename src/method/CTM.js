@@ -13,14 +13,16 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 export const CTM = {
   /** @param {WoodAssetsCTM} wood */
   async updateWood(wood) {
+    const path = `${Ctx.WORK_DIR}/tmp/ctm/${wood.assetPath}`;
+
     const isStripped = WoodFacts.isStripped(wood);
     setUpDirs(wood, isStripped);
 
-    Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/ctm/${wood.type}`, async (dir) => {
+    Dir.makeTemp(path, async (dir) => {
       await SpriteMaker.CTM.updateVariantSprites(dir, wood);
       if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
 
-      if (!Ctx.NEW_WOODS?.[wood.type]) {
+      if (!Ctx.NEW_WOODS?.[wood.id]) {
         removeDirs(wood);
         execSync(`rm -rf ${dir}`);
         LOGGER.err(`Failed to update '${wood.type}' wood type`);
@@ -36,7 +38,7 @@ export const CTM = {
 
   /** @param {WoodAssetsCTM[]} woodAssets */
   updateEdges(woodAssets) {
-    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.MINECRAFT}/${Dir.CTM}/_overlays/edges`;
+    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM}/_overlays/edges`;
     const ctmEdgesProps = globSync([
       `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
       `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
@@ -82,7 +84,8 @@ export const CTM = {
   updateAll() {
     console.log(`Updating all ${WoodTypes.VANILLA.length} wood types...`);
 
-    const woodAssets = WoodTypes.VANILLA.map((wood) => Wood.assetsCTM(wood));
+    const allWoods = [...WoodTypes.VANILLA]; // TODO: pack compat resources separately?
+    const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
     CTM.updateEdges(woodAssets);
 
     for (const wood of woodAssets) {
