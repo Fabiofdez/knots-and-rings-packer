@@ -1,0 +1,20 @@
+{
+    "fusion": {
+        "type": "connecting",
+        "layout": "full",
+        "connections": {
+            "type": "and",
+            "predicates": [
+                { "type": "is_same_state" },
+                {
+                    "type": "match_state",
+                    "block": "regions_unexplored:palm_log",
+                    "ignore_missing": true,
+                    "properties": {
+                        "is_trunk": "true"
+                    }
+                }
+            ]
+        }
+    }
+}

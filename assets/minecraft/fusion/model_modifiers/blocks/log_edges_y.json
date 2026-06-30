@@ -71,6 +71,154 @@
     {
       "block": "stripped_spruce_log",
       "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:ashen_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:baobab_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:blackwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:brimwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:cobalt_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:cypress_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:dead_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:eucalyptus_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:joshua_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:kapok_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:larch_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:magnolia_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:maple_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:palm_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:pine_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:redwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:socotra_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:willow_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:wisteria_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_baobab_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_blackwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_brimwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_cobalt_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_cypress_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_dead_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_eucalyptus_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_joshua_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_kapok_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_larch_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_magnolia_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_maple_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_palm_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_pine_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_redwood_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_socotra_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_willow_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
+    },
+    {
+      "block": "regions_unexplored:stripped_wisteria_log",
+      "properties": { "is_trunk": "false", "axis": "y" }
     }
   ],
   "ignore_missing_targets": true,
