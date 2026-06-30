@@ -16,11 +16,12 @@ export const CTM = {
     const path = `${Ctx.WORK_DIR}/tmp/ctm/${wood.assetPath}`;
 
     const isStripped = WoodFacts.isStripped(wood);
-    setUpDirs(wood, isStripped);
+    const hasVariants = WoodTypes.hasVariants(wood);
+    setUpDirs(wood, isStripped, hasVariants);
 
     Dir.makeTemp(path, async (dir) => {
-      await SpriteMaker.CTM.updateVariantSprites(dir, wood);
       if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
+      if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         removeDirs(wood);
@@ -28,9 +29,11 @@ export const CTM = {
         LOGGER.err(`Failed to update '${wood.type}' wood type`);
       }
 
-      Templates.CTM.LOG.updatePropsFor(wood);
-      Templates.CTM.WOOD.updatePropsFor(wood);
       if (!isStripped) Templates.CTM.TOP.updatePropsFor(wood);
+      if (hasVariants) {
+        Templates.CTM.LOG.updatePropsFor(wood);
+        Templates.CTM.WOOD.updatePropsFor(wood);
+      }
 
       console.log(`...updated '${wood.type}' wood type`);
     });
@@ -38,7 +41,7 @@ export const CTM = {
 
   /** @param {WoodAssetsCTM[]} woodAssets */
   updateEdges(woodAssets) {
-    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM}/_overlays/edges`;
+    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/_overlays/edges`;
     const ctmEdgesProps = globSync([
       `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
       `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
@@ -82,9 +85,9 @@ export const CTM = {
   },
 
   updateAll() {
-    console.log(`Updating all ${WoodTypes.VANILLA.length} wood types...`);
+    const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
+    console.log(`Updating all ${allWoods.length} wood types...`);
 
-    const allWoods = [...WoodTypes.VANILLA]; // TODO: pack compat resources separately?
     const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
     CTM.updateEdges(woodAssets);
 
@@ -97,17 +100,21 @@ export const CTM = {
 /**
  * @param {WoodAssetsCTM} wood
  * @param {boolean} isStripped
+ * @param {boolean} makeVariants
  */
-function setUpDirs(wood, isStripped) {
-  const variants = existsSync(wood.variantsDir);
-  const tops = existsSync(wood.topsDir);
+function setUpDirs(wood, isStripped, makeVariants) {
+  const existingVariants = existsSync(wood.variantsDir);
+  const existingTops = existsSync(wood.topsDir);
 
-  if (!variants && !tops) {
+  if ((makeVariants && !existingVariants) && (isStripped || !existingTops)) {
     console.log(`Adding new '${wood.type}' wood type...`);
   }
-  if (!variants) execSync(`mkdir -p ${wood.variantsDir}`);
-  if (!isStripped && !tops) execSync(`mkdir -p ${wood.topsDir}`);
-  if (isStripped && tops) execSync(`rm -rf ${wood.topsDir}`);
+
+  if (!existingVariants && makeVariants) execSync(`mkdir -p ${wood.variantsDir}`);
+  if (existingVariants && !makeVariants) execSync(`rm -rf ${wood.variantsDir}`);
+
+  if (!existingTops && !isStripped) execSync(`mkdir -p ${wood.topsDir}`);
+  if (existingTops && isStripped) execSync(`rm -rf ${wood.topsDir}`);
 
   markToUpdate(wood);
 }

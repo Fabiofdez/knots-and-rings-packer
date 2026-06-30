@@ -20,8 +20,8 @@ export const Wood = {
 
     return /** @type {const} */ ({
       ...base,
-      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM}/${base.assetPath}`,
-      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM}/_overlays/${base.assetPath}_log_top`,
+      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM.variants(base.namespace)}/${base.type}`,
+      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM.tops(base.namespace)}/${base.type}_log_top`,
     });
   },
 

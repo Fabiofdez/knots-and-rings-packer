@@ -19,11 +19,12 @@ export const Fusion = {
     const path = `${Ctx.WORK_DIR}/tmp/fusion/${wood.assetPath}`;
 
     const isStripped = WoodFacts.isStripped(wood);
+    const hasVariants = WoodTypes.hasVariants(wood);
     setUpDirs(wood);
 
     Dir.makeTemp(path, async (dir) => {
-      SpriteMaker.Fusion.updateVariantSprites(dir, wood);
       if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
+      if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         execSync(`rm -rf ${dir}`);
@@ -32,9 +33,11 @@ export const Fusion = {
 
       await SpriteMaker.Fusion.collectNewAssets(dir, wood);
 
-      Templates.Fusion.LOG.updatePropsFor(wood);
-      Templates.Fusion.WOOD.updatePropsFor(wood);
       if (!isStripped) Templates.Fusion.TOP.updatePropsFor(wood);
+      if (hasVariants) {
+        Templates.Fusion.LOG.updatePropsFor(wood);
+        Templates.Fusion.WOOD.updatePropsFor(wood);
+      }
 
       console.log(`...updated '${wood.type}' wood type`);
     });
@@ -113,9 +116,9 @@ export const Fusion = {
   },
 
   updateAll() {
-    console.log(`Updating all ${WoodTypes.VANILLA.length} wood types...`);
+    const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
+    console.log(`Updating all ${allWoods.length} wood types...`);
 
-    const allWoods = [...WoodTypes.VANILLA]; // TODO: pack compat resources separately?
     const woodAssets = allWoods.map((wood) => Wood.assetsFusion(wood));
     Fusion.updateEdges(woodAssets);
 

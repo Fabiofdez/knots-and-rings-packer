@@ -2,7 +2,14 @@ import { Namespace } from "@util/Wood";
 import { execSync } from "node:child_process";
 
 export const Dir = /** @type {const} */ ({
-  CTM: "assets/minecraft/optifine/ctm",
+  CTM: {
+    ROOT: "assets/minecraft/optifine/ctm",
+
+    variants: (namespace = Namespace.VANILLA) =>
+      /** @type {const} */ (`${Dir.CTM.ROOT}/${namespace}`),
+    tops: (namespace = Namespace.VANILLA) =>
+      /** @type {const} */ (`${Dir.CTM.ROOT}/_overlays/${namespace}`),
+  },
   FUSION: {
     textures: (namespace = Namespace.VANILLA) =>
       /** @type {const} */ (`assets/${namespace}/textures`),
