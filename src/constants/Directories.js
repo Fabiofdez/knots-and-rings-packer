@@ -5,10 +5,9 @@ export const Dir = /** @type {const} */ ({
   CTM: {
     ROOT: "assets/minecraft/optifine/ctm",
 
-    variants: (namespace = Namespace.VANILLA) =>
-      /** @type {const} */ (`${Dir.CTM.ROOT}/${namespace}`),
-    tops: (namespace = Namespace.VANILLA) =>
-      /** @type {const} */ (`${Dir.CTM.ROOT}/_overlays/${namespace}`),
+    /** @param {BaseWoodAssets} wood */
+    forType: (wood) =>
+      /** @type {const} */ (`${Dir.CTM.ROOT}/${wood.namespace}/${wood.type}`),
   },
   FUSION: {
     textures: (namespace = Namespace.VANILLA) =>

@@ -16,23 +16,23 @@ export const Namespace = {
 export const Wood = {
   /** @param {WoodType} id */
   assetsCTM(id) {
-    const base = baseAssets(id);
+    const wood = baseAssets(id);
 
     return /** @type {const} */ ({
-      ...base,
-      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM.variants(base.namespace)}/${base.type}`,
-      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM.tops(base.namespace)}/${base.type}_log_top`,
+      ...wood,
+      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM.forType(wood)}`,
+      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM.forType(wood)}/top`,
     });
   },
 
   /** @param {WoodType} id */
   assetsFusion(id) {
-    const base = baseAssets(id);
+    const wood = baseAssets(id);
 
     return /** @type {const} */ ({
-      ...base,
-      texturesDir: `${Ctx.WORK_DIR}/${Dir.FUSION.textures(base.namespace)}/block`,
-      modifiersDir: `${Ctx.WORK_DIR}/${Dir.FUSION.modelModifiers(base.namespace)}/blocks`,
+      ...wood,
+      texturesDir: `${Ctx.WORK_DIR}/${Dir.FUSION.textures(wood.namespace)}/block`,
+      modifiersDir: `${Ctx.WORK_DIR}/${Dir.FUSION.modelModifiers(wood.namespace)}/blocks`,
     });
   },
 };
