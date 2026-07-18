@@ -55,6 +55,7 @@ function split(cmdOpts, spriteSheet, ...opts) {
     spriteSheet,
     "-crop 16x16",
     "+repage",
+    "-strip",
     ...opts,
     "%d.png",
   ]);

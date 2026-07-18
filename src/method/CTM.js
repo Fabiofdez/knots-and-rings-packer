@@ -106,15 +106,22 @@ function setUpDirs(wood, isStripped, makeVariants) {
   const existingVariants = existsSync(wood.variantsDir);
   const existingTops = existsSync(wood.topsDir);
 
-  if ((makeVariants && !existingVariants) && (isStripped || !existingTops)) {
+  if (makeVariants && !existingVariants && (isStripped || !existingTops)) {
     console.log(`Adding new '${wood.type}' wood type...`);
   }
 
-  if (!existingVariants && makeVariants) execSync(`mkdir -p ${wood.variantsDir}`);
-  if (existingVariants && !makeVariants) execSync(`rm -rf ${wood.variantsDir}`);
+  if (!existingVariants) {
+    if (makeVariants) execSync(`mkdir -p ${wood.variantsDir}`);
+  } else {
+    if (!makeVariants && isStripped) execSync(`rm -rf ${wood.variantsDir}`);
+  }
 
-  if (!existingTops && !isStripped) execSync(`mkdir -p ${wood.topsDir}`);
-  if (existingTops && isStripped) execSync(`rm -rf ${wood.topsDir}`);
+  if (!existingTops) {
+    if (!isStripped) execSync(`mkdir -p ${wood.topsDir}`);
+  } else {
+    if (isStripped) execSync(`rm -rf ${wood.topsDir}`);
+  }
+
 
   markToUpdate(wood);
 }
