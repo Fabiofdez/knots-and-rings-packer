@@ -1,0 +1,15 @@
+{
+  "textures": {
+    "particle": "#texture"
+  },
+  "elements": [
+    {
+      "from": [0, 16, 0],
+      "to": [16, 16, 16],
+      "rotation": { "axis": "y", "angle": -90, "origin": [8, 8, 8] },
+      "faces": {
+        "up": { "texture": "#texture", "cullface": "up" }
+      }
+    }
+  ]
+}

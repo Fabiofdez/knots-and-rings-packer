@@ -1,20 +1,31 @@
-import { Namespace } from "@util/Wood";
 import { execSync } from "node:child_process";
+
+export const Namespace = {
+  VANILLA: "minecraft",
+  REGIONS_UNEXPLORED: "regions_unexplored",
+};
 
 export const Dir = /** @type {const} */ ({
   CTM: {
     ROOT: "assets/minecraft/optifine/ctm",
 
-    /** @param {BaseWoodAssets} wood */
-    forType: (wood) =>
-      /** @type {const} */ (`${Dir.CTM.ROOT}/${wood.namespace}/${wood.type}`),
+    forType: (namespace = Namespace.VANILLA, type) =>
+      /** @type {const} */ (`${Dir.CTM.ROOT}/${namespace}/${type}`),
   },
+
   FUSION: {
-    textures: (namespace = Namespace.VANILLA) =>
-      /** @type {const} */ (`assets/${namespace}/textures`),
     modelModifiers: (namespace = Namespace.VANILLA) =>
       /** @type {const} */ (`assets/${namespace}/fusion/model_modifiers`),
   },
+
+  blockstates: (namespace = Namespace.VANILLA) =>
+    /** @type {const} */ (`assets/${namespace}/blockstates`),
+
+  models: (namespace = Namespace.VANILLA) =>
+    /** @type {const} */ (`assets/${namespace}/models`),
+
+  textures: (namespace = Namespace.VANILLA) =>
+    /** @type {const} */ (`assets/${namespace}/textures`),
 
   DEFAULT_SPRITES: "Knotted_Wood/sprite_defaults",
   VARIANT_SPRITES: "Knotted_Wood/spritesheet_variants",

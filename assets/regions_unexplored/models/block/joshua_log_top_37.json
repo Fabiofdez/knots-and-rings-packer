@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_column_ends",
+  "textures": {
+    "texture": "regions_unexplored:block/joshua_log_top_37"
+  }
+}

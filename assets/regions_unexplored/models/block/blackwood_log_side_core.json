@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face",
+  "textures": {
+    "texture": "regions_unexplored:block/blackwood_log_side_core"
+  }
+}

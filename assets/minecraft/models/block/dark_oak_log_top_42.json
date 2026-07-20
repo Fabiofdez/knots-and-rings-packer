@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_column_ends",
+  "textures": {
+    "texture": "minecraft:block/dark_oak_log_top_42"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face_horizontal",
+  "textures": {
+    "texture": "regions_unexplored:block/magnolia_log_side_right"
+  }
+}

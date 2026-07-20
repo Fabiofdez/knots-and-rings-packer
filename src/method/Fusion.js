@@ -1,7 +1,7 @@
 import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
-import { markToUpdate } from "@methods/common";
+import { Common } from "@methods/Common";
 import { LOGGER } from "@util/Logger";
 import { SpriteMaker } from "@util/SpriteMaker";
 import { Templates } from "@util/Templates";
@@ -15,7 +15,7 @@ const formatOpts = { parser: "json", printWidth: 60 };
 
 export const Fusion = {
   /** @param {WoodAssetsFusion} wood */
-  async updateWood(wood) {
+  updateWood(wood) {
     const path = `${Ctx.WORK_DIR}/tmp/fusion/${wood.assetPath}`;
 
     const isStripped = WoodFacts.isStripped(wood);
@@ -23,7 +23,7 @@ export const Fusion = {
     setUpDirs(wood);
 
     Dir.makeTemp(path, async (dir) => {
-      if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
+      // if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
       if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
@@ -33,10 +33,10 @@ export const Fusion = {
 
       await SpriteMaker.Fusion.collectNewAssets(dir, wood);
 
-      if (!isStripped) Templates.Fusion.TOP.updatePropsFor(wood);
+      // if (!isStripped) Templates.Fusion.TOP.defineFor(wood);
       if (hasVariants) {
-        Templates.Fusion.LOG.updatePropsFor(wood);
-        Templates.Fusion.WOOD.updatePropsFor(wood);
+        Templates.Fusion.LOG_VARIANTS.defineFor(wood);
+        Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
       }
 
       console.log(`...updated '${wood.type}' wood type`);
@@ -44,7 +44,7 @@ export const Fusion = {
   },
 
   /** @param {WoodAssetsFusion[]} woodAssets */
-  async updateEdges(woodAssets) {
+  updateEdges(woodAssets) {
     const [defaultWood] = woodAssets;
 
     /**
@@ -104,7 +104,7 @@ export const Fusion = {
      * @param {(axis: string) => string} filePredicate
      * @param {(typeof targets)[keyof typeof targets]} targetSet
      */
-    const saveModifierSet = async (filePredicate, targetSet) => {
+    const saveModifierSet = (filePredicate, targetSet) => {
       saveModifier(filePredicate("x"), targetSet.x);
       saveModifier(filePredicate("y"), targetSet.y);
       saveModifier(filePredicate("z"), targetSet.z);
@@ -123,6 +123,7 @@ export const Fusion = {
     Fusion.updateEdges(woodAssets);
 
     // Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/edges`, async (dir) => {
+    //   await SpriteMaker.Fusion.updateLogEdgeSprites(dir);
     //   await SpriteMaker.Fusion.updateWoodEdgeSprites(dir);
     // });
 
@@ -139,5 +140,5 @@ function setUpDirs(wood) {
     execSync(`mkdir -p ${wood.texturesDir}`);
   }
 
-  markToUpdate(wood);
+  Common.markToUpdate(wood);
 }

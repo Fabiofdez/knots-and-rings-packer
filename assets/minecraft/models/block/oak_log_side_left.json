@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face",
+  "textures": {
+    "texture": "minecraft:block/oak_log_side_left"
+  }
+}

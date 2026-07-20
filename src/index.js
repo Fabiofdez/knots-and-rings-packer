@@ -1,5 +1,6 @@
 import { Ctx } from "@const/RunContext";
 import { Zip } from "@const/ZipInfo";
+import { Common } from "@methods/Common";
 import { CTM } from "@methods/CTM";
 import { Fusion } from "@methods/Fusion";
 import { LOGGER } from "@util/Logger";
@@ -88,6 +89,8 @@ function getShellConst(varName) {
 function updateWood(woodType, method = "ctm") {
   if (!woodType) LOGGER.errOfferHelp("Wood type must be provided");
 
+  Common.updateWood(Wood.baseAssets(woodType));
+
   if (method === "fusion") {
     Fusion.updateWood(Wood.assetsFusion(woodType));
   } else {
@@ -96,6 +99,8 @@ function updateWood(woodType, method = "ctm") {
 }
 
 function updateAll(method = "ctm") {
+  Common.updateAll();
+
   if (method === "fusion") Fusion.updateAll();
   else CTM.updateAll();
 }
