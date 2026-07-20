@@ -298,6 +298,8 @@ export const SpriteMaker = {
      * @param {WoodAssetsFusion} wood
      */
     async collectNewAssets(tmpDir, wood) {
+      if (!existsSync(`${tmpDir}/out`)) return;
+
       execSync(`mv out/* .`, { cwd: tmpDir });
 
       /** @type {typeof isPNG} */
@@ -319,7 +321,7 @@ function hasSpritesheet(dir, spriteType, wood) {
 
   if (exists) return true;
 
-  LOGGER.warn(`Spritesheet (${spriteType}) for '${wood.type}' not found`);
+  LOGGER.warn(`Spritesheet (${spriteType}) for '${wood.id}' not found`);
   if (Ctx.NEW_WOODS?.[wood.id]) {
     Ctx.NEW_WOODS = { ...Ctx.NEW_WOODS, [wood.id]: false };
   }

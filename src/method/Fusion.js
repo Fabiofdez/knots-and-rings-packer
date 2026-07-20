@@ -28,10 +28,10 @@ export const Fusion = {
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         execSync(`rm -rf ${dir}`);
-        LOGGER.err(`Failed to update '${wood.type}' wood type`);
+        LOGGER.err(`Failed to update '${wood.id}' wood type`);
       }
 
-      await SpriteMaker.Fusion.collectNewAssets(dir, wood);
+      // await SpriteMaker.Fusion.collectNewAssets(dir, wood);
 
       // if (!isStripped) Templates.Fusion.TOP.defineFor(wood);
       if (hasVariants) {
@@ -39,7 +39,7 @@ export const Fusion = {
         Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
       }
 
-      console.log(`...updated '${wood.type}' wood type`);
+      console.log(`...updated '${wood.id}' wood type`);
     });
   },
 
@@ -136,7 +136,7 @@ export const Fusion = {
 /** @param {WoodAssetsFusion} wood */
 function setUpDirs(wood) {
   if (!existsSync(wood.texturesDir)) {
-    console.log(`Adding new '${wood.type}' wood type...`);
+    console.log(`Adding new '${wood.id}' wood type...`);
     execSync(`mkdir -p ${wood.texturesDir}`);
   }
 

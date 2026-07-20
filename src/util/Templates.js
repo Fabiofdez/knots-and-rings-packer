@@ -105,10 +105,10 @@ const build = (T) => ({
     let content = readFileSync(outFile).toLocaleString();
     if (replacer instanceof Array) {
       replacer.forEach((repl) => (content = replaceTarget(content, repl)));
-    } else if (typeof replacer !== "string") {
-      content = replaceTarget(content, replacer);
-    } else {
+    } else if (typeof replacer === "string") {
       content = replaceTarget(content, { value: replacer });
+    } else if (replacer?.regex) {
+      content = replaceTarget(content, replacer);
     }
 
     if (T.postProcess instanceof Function) {

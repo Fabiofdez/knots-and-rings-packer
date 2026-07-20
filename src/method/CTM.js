@@ -26,7 +26,7 @@ export const CTM = {
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         removeDirs(wood);
         execSync(`rm -rf ${dir}`);
-        LOGGER.err(`Failed to update '${wood.type}' wood type`);
+        LOGGER.err(`Failed to update '${wood.id}' wood type`);
       }
 
       // if (!isStripped) Templates.CTM.TOP.defineFor(wood);
@@ -35,7 +35,7 @@ export const CTM = {
         Templates.CTM.WOOD_VARIANTS.defineFor(wood);
       }
 
-      console.log(`...updated '${wood.type}' wood type`);
+      console.log(`...updated '${wood.id}' wood type`);
     });
   },
 
@@ -107,7 +107,7 @@ function setUpDirs(wood, isStripped, makeVariants) {
   const existingTops = existsSync(wood.topsDir);
 
   if (makeVariants && !existingVariants && (isStripped || !existingTops)) {
-    console.log(`Adding new '${wood.type}' wood type...`);
+    console.log(`Adding new '${wood.id}' wood type...`);
   }
 
   if (!existingVariants) {
