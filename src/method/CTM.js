@@ -13,13 +13,11 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 export const CTM = {
   /** @param {WoodAssetsCTM} wood */
   updateWood(wood) {
-    const path = `${Ctx.WORK_DIR}/tmp/ctm/${wood.assetPath}`;
-
     const isStripped = WoodFacts.isStripped(wood);
     const hasVariants = WoodTypes.hasVariants(wood);
     setUpDirs(wood, isStripped, hasVariants);
 
-    Dir.makeTemp(path, async (dir) => {
+    Dir.makeTemp(`tmp/ctm/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
       if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
 

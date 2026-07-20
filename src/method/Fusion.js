@@ -16,13 +16,10 @@ const formatOpts = { parser: "json", printWidth: 60 };
 export const Fusion = {
   /** @param {WoodAssetsFusion} wood */
   updateWood(wood) {
-    const path = `${Ctx.WORK_DIR}/tmp/fusion/${wood.assetPath}`;
-
-    const isStripped = WoodFacts.isStripped(wood);
     const hasVariants = WoodTypes.hasVariants(wood);
     setUpDirs(wood);
 
-    Dir.makeTemp(path, async (dir) => {
+    Dir.makeTemp(`tmp/fusion/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
       if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
 

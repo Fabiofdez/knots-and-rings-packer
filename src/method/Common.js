@@ -16,12 +16,10 @@ export const Common = {
   updateWood(wood) {
     if (WoodFacts.isStripped(wood)) return;
 
-    const path = `${Ctx.WORK_DIR}/tmp/${wood.assetPath}`;
-
     execSync(`mkdir -p ${wood.blockstatesDir}`);
     execSync(`mkdir -p ${wood.modelsDir}`);
 
-    Dir.makeTemp(path, async (dir) => {
+    Dir.makeTemp(`tmp/common/${wood.assetPath}`, async (dir) => {
       await SpriteMaker.COMMON.updateTopSprites(dir, wood);
       SpriteMaker.COMMON.updateLogSideSprites(dir, wood);
 

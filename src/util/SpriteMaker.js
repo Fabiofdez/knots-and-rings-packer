@@ -171,7 +171,7 @@ export const SpriteMaker = {
       });
 
       /** @type {typeof isPNG} */
-      const mask = (file) => isPNG(file) && file.includes(`${baseTexture}_`);
+      const mask = (file) => isPNG(file) && file.startsWith(`${baseTexture}_`);
 
       await filterChangedSprites(tmpDir, wood.texturesDir, mask);
     },

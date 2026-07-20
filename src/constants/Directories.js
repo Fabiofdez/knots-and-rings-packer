@@ -1,3 +1,4 @@
+import { Ctx } from "@const/RunContext";
 import { execSync } from "node:child_process";
 
 export const Namespace = {
@@ -37,10 +38,10 @@ export const Dir = /** @type {const} */ ({
    * @param {(dir: string) => Promise<void>} predicate
    */
   async makeTemp(tmpDir, predicate) {
-    execSync(`mkdir -p ${tmpDir}`);
+    const absolutePath = `${Ctx.WORK_DIR}/${tmpDir}`;
 
+    execSync(`mkdir -p ${absolutePath}`);
     await predicate(tmpDir);
-
-    execSync(`rm -r ${tmpDir}`);
+    execSync(`rm -r ${absolutePath}`);
   },
 });
