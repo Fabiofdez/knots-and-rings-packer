@@ -1,7 +1,7 @@
 {
     "fusion": {
         "type": "connecting",
-        "layout": "simple",
+        "layout": "full",
         "render_type": "translucent",
         "connections": [{ "type": "is_same_block" }]
     }

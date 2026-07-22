@@ -1,8 +1,0 @@
-{
-    "fusion": {
-        "type": "random",
-        "rows": 7,
-        "columns": 15,
-        "randomness_source": "position_facing"
-    }
-}

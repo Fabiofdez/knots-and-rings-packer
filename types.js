@@ -13,11 +13,21 @@
 /**
  * @typedef {ReturnType<BaseWoodAssets["logFaces"]>} LogFaceMapping
  *
+ * @typedef {ReturnType<BaseWoodAssets["barkVariants"]>} VariantMapping
+ *
  * @typedef {ReturnType<BaseWoodAssets["resId"]>} ModelId
  *
  * @typedef {keyof LogFaceMapping} LogFace
  *
- * @typedef {{ [k in LogFace]: ModelId }} ResIdMapping
+ * @typedef {{ [Key in keyof LogFaceMapping]: ModelId } & {
+ *   VARIANTS: ModelId[];
+ * }} WoodResIdMapping
+ *
+ *
+ * @typedef {Omit<WoodResIdMapping, "BARK" | "CORE" | "TOP" | "VARIANTS">} EdgeResIdMapping
+ *
+ *
+ * @typedef {keyof EdgeResIdMapping} EdgeSide
  */
 
 /**
@@ -59,6 +69,29 @@
 /**
  * @template T, U
  * @typedef {(
- *   defProvider: (arg1: U, model: LogFaceMapping[LogFace]) => TemplateDef<T>,
- * ) => PropTemplate<T>} TemplateMultiProvider
+ *   defProvider: (arg1: T, model: LogFaceMapping[LogFace]) => TemplateDef<U>,
+ * ) => PropTemplate<U>} LogModelTemplateProvider
+ */
+
+/**
+ * @template T, U
+ * @typedef {(
+ *   defProvider: (arg1: T, model: VariantMapping[number]) => TemplateDef<U>,
+ * ) => PropTemplate<U>} BarkModelTemplateProvider
+ */
+
+/**
+ * @typedef {{ defineAll: () => void }} EdgePropTemplate
+ *
+ * @typedef {{
+ *   baseFile: string;
+ *   output: string;
+ *   replacer: ReplaceTarget;
+ *   postProcess?: (content: string) => string;
+ * }} EdgeTemplateDef
+ *
+ *
+ * @typedef {(
+ *   defProvider: (side: EdgeSide, model: string) => EdgeTemplateDef,
+ * ) => EdgePropTemplate} EdgeModelTemplateProvider
  */

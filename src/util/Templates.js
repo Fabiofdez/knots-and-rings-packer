@@ -1,8 +1,10 @@
+import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
+import { WoodFacts } from "@util/Wood";
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
-/** @type {{ [k: WoodType]: ResIdMapping }} */
+/** @type {{ [k: WoodType]: WoodResIdMapping }} */
 const MODEL_CACHE = {};
 
 const SIDES_TO_TOP = [
@@ -57,20 +59,38 @@ const SIDES_TO_TOP = [
 
 /**
  * @param {BaseWoodAssets} wood
- * @returns {ResIdMapping}
+ * @returns {WoodResIdMapping}
  */
 function resIds(wood) {
   const cached = MODEL_CACHE[wood.id];
   if (cached) return cached;
 
   const models = wood.logFaces();
+  const variants = wood.barkVariants();
 
   Object.entries(models).forEach(([side, model]) => {
     models[side] = wood.resId(model);
   });
 
-  MODEL_CACHE[wood.id] = models;
-  return models;
+  MODEL_CACHE[wood.id] = {
+    ...models,
+    VARIANTS: variants.map((model) => wood.resId(model)),
+  };
+
+  return MODEL_CACHE[wood.id];
+}
+
+function mcId(str = "") {
+  return /** @type {const} */ (`minecraft:block/${str}`);
+}
+
+/** @returns {{ [k in keyof EdgeResIdMapping]: string }} */
+function logEdges() {
+  return {
+    SM: "log_edge_sm",
+    LEFT: "log_edge_left",
+    RIGHT: "log_edge_right",
+  };
 }
 
 /**
@@ -125,7 +145,7 @@ const buildCTM = build;
 const buildFusion = build;
 
 const LogModelPacker = {
-  /** @type {TemplateMultiProvider<BaseWoodAssets, LogFace>} */
+  /** @type {LogModelTemplateProvider<LogFace, BaseWoodAssets>} */
   buildSides: (defProvider) => ({
     defineFor(wood) {
       const { TOP, ...logSides } = wood.logFaces();
@@ -140,7 +160,7 @@ const LogModelPacker = {
     },
   }),
 
-  /** @type {TemplateMultiProvider<BaseWoodAssets, Number>} */
+  /** @type {LogModelTemplateProvider<Number, BaseWoodAssets>} */
   buildTops: (defProvider) => ({
     defineFor(wood) {
       const model = wood.logFaces().TOP;
@@ -150,10 +170,51 @@ const LogModelPacker = {
         .forEach((def) => build(def).defineFor(wood));
     },
   }),
+
+  /** @type {LogModelTemplateProvider<Number, BaseWoodAssets>} */
+  buildDefaultTops: (defProvider) => ({
+    defineFor(wood) {
+      const model = wood.logFaces().TOP;
+      return build(defProvider(0, model)).defineFor(wood);
+    },
+  }),
+
+  /** @type {EdgeModelTemplateProvider} */
+  buildEdges: (defProvider) => ({
+    defineAll() {
+      const edges = logEdges();
+
+      Object.entries(edges)
+        .map(([side, model]) => defProvider(side, model))
+        .forEach((def) => build(def).defineFor());
+
+      Object.entries(edges)
+        .map(([side, model]) => defProvider(side, `${model}_horizontal`))
+        .forEach((def) => build(makeHorizontal(def)).defineFor());
+    },
+  }),
+};
+
+const BarkModelPacker = {
+  /** @type {BarkModelTemplateProvider<Number, BaseWoodAssets>} */
+  buildVariants: (defProvider) => ({
+    defineFor(wood) {
+      const variants = wood.barkVariants();
+      if (WoodFacts.isStripped(wood)) variants.push(wood.logFaces().BARK);
+
+      variants
+        .map((model, idx) => defProvider(idx, model))
+        .forEach((def) => build(def).defineFor(wood));
+
+      variants
+        .map((model, idx) => defProvider(idx, `${model}_horizontal`))
+        .forEach((def) => build(makeHorizontal(def)).defineFor(wood));
+    },
+  }),
 };
 
 /** @param {{ x: number; y: number; z: number }} axes */
-function rotation(axes = {}) {
+function rotate(axes = {}) {
   const trimBrackets = /^\{([^]*)\}$/;
   const parsed = JSON.stringify(axes).match(trimBrackets)?.[1]?.trim();
 
@@ -161,34 +222,69 @@ function rotation(axes = {}) {
   return `", ${parsed}`;
 }
 
+/** @type {WoodMultiPredicate<BaseWoodAssets>} */
+const modelBarkReplacements = (wood) => [
+  { regex: /T_LOG_BARK/g, value: resIds(wood).BARK },
+  { regex: /T_BARK/g, value: wood.resId(wood.bark()) },
+];
+
+/** @type {Replacement[]} */
+const modelOrientationReplacements = [
+  { regex: /",[\s\n]*"X_0": "TEMPLATE"/g, value: rotate() },
+  { regex: /",[\s\n]*"X_1": "TEMPLATE"/g, value: rotate({ x: 90 }) },
+  { regex: /",[\s\n]*"X_2": "TEMPLATE"/g, value: rotate({ x: 180 }) },
+  { regex: /",[\s\n]*"X_3": "TEMPLATE"/g, value: rotate({ x: 270 }) },
+
+  { regex: /",[\s\n]*"Y_0": "TEMPLATE"/g, value: rotate() },
+  { regex: /",[\s\n]*"Y_1": "TEMPLATE"/g, value: rotate({ y: 90 }) },
+  { regex: /",[\s\n]*"Y_2": "TEMPLATE"/g, value: rotate({ y: 180 }) },
+  { regex: /",[\s\n]*"Y_3": "TEMPLATE"/g, value: rotate({ y: 270 }) },
+
+  { regex: /",[\s\n]*"Z_0": "TEMPLATE"/g, value: rotate({ y: 90 }) },
+  { regex: /",[\s\n]*"Z_1": "TEMPLATE"/g, value: rotate({ x: 90, y: 90 }) },
+  { regex: /",[\s\n]*"Z_2": "TEMPLATE"/g, value: rotate({ x: 180, y: 90 }) },
+  { regex: /",[\s\n]*"Z_3": "TEMPLATE"/g, value: rotate({ x: -90, y: 90 }) },
+];
+
+/** @type {TemplateDef<BaseWoodAssets>} */
+const logBlockstateDef = {
+  output: (wood) => `${wood.blockstatesDir}/${wood.logAsset}.json`,
+  replacer: (wood) => [
+    { regex: /TEMPLATE_LOG_DEFAULT/g, value: wood.resId() },
+    { regex: /TEMPLATE_LOG_SM/g, value: resIds(wood).SM },
+    { regex: /TEMPLATE_LOG_LEFT/g, value: resIds(wood).LEFT },
+    { regex: /TEMPLATE_LOG_RIGHT/g, value: resIds(wood).RIGHT },
+    { regex: /TEMPLATE_LOG_CORE/g, value: resIds(wood).CORE },
+    { regex: /TEMPLATE_LOG_TOP/g, value: resIds(wood).TOP },
+    ...modelBarkReplacements(wood),
+
+    { regex: /TEMPLATE_LOG_EDGES_SM/g, value: mcId(logEdges().SM) },
+    { regex: /TEMPLATE_LOG_EDGES_LEFT/g, value: mcId(logEdges().LEFT) },
+    { regex: /TEMPLATE_LOG_EDGES_RIGHT/g, value: mcId(logEdges().RIGHT) },
+
+    ...modelOrientationReplacements,
+  ],
+  postProcess: (json) => JSON.stringify(JSON.parse(json)),
+};
+
 export const Templates = {
   BLOCKSTATES: {
     LOG: build({
       baseFile: "template_log_blockstates.json",
-      output: (wood) => `${wood.blockstatesDir}/${wood.logAsset}.json`,
+      ...logBlockstateDef,
+    }),
+
+    STRIPPED_LOG: build({
+      baseFile: "template_stripped_log_blockstates.json",
+      ...logBlockstateDef,
+    }),
+
+    WOOD: build({
+      baseFile: "template_wood_blockstates.json",
+      output: (wood) => `${wood.blockstatesDir}/${wood.woodAsset}.json`,
       replacer: (wood) => [
-        { regex: /TEMPLATE_LOG_DEFAULT/g, value: wood.resId() },
-        { regex: /TEMPLATE_LOG_BARK/g, value: resIds(wood).BARK },
-        { regex: /TEMPLATE_LOG_SM/g, value: resIds(wood).SM },
-        { regex: /TEMPLATE_LOG_LEFT/g, value: resIds(wood).LEFT },
-        { regex: /TEMPLATE_LOG_RIGHT/g, value: resIds(wood).RIGHT },
-        { regex: /TEMPLATE_LOG_CORE/g, value: resIds(wood).CORE },
-        { regex: /TEMPLATE_LOG_TOP/g, value: resIds(wood).TOP },
-
-        { regex: /", "X_0": "TEMPLATE"/g, value: rotation() },
-        { regex: /", "X_1": "TEMPLATE"/g, value: rotation({ x: 90 }) },
-        { regex: /", "X_2": "TEMPLATE"/g, value: rotation({ x: 180 }) },
-        { regex: /", "X_3": "TEMPLATE"/g, value: rotation({ x: 270 }) },
-
-        { regex: /", "Y_0": "TEMPLATE"/g, value: rotation() },
-        { regex: /", "Y_1": "TEMPLATE"/g, value: rotation({ y: 90 }) },
-        { regex: /", "Y_2": "TEMPLATE"/g, value: rotation({ y: 180 }) },
-        { regex: /", "Y_3": "TEMPLATE"/g, value: rotation({ y: 270 }) },
-
-        { regex: /", "Z_0": "TEMPLATE"/g, value: rotation({ y: 90 }) },
-        { regex: /", "Z_1": "TEMPLATE"/g, value: rotation({ x: 90, y: 90 }) },
-        { regex: /", "Z_2": "TEMPLATE"/g, value: rotation({ x: 180, y: 90 }) },
-        { regex: /", "Z_3": "TEMPLATE"/g, value: rotation({ x: -90, y: 90 }) },
+        ...modelBarkReplacements(wood),
+        ...modelOrientationReplacements,
       ],
       postProcess: (json) => JSON.stringify(JSON.parse(json)),
     }),
@@ -196,10 +292,10 @@ export const Templates = {
 
   MODELS: {
     LOG_SIDES: LogModelPacker.buildSides((side, model) => ({
-      baseFile: "template_log_side_model.json",
+      baseFile: "template_side_model.json",
       output: (wood) => `${wood.modelsDir}/${model}.json`,
       replacer: (wood) => ({
-        regex: /TEMPLATE_LOG_TEXTURE/g,
+        regex: /TEMPLATE_TEXTURE/g,
         value: side === "BARK" ? wood.resId() : resIds(wood)[side],
       }),
     })),
@@ -210,6 +306,33 @@ export const Templates = {
       replacer: (wood) => ({
         regex: /TEMPLATE_LOG_TEXTURE/g,
         value: `${resIds(wood).TOP}_${idx}`,
+      }),
+    })),
+
+    DEFAULT_LOG_TOPS: LogModelPacker.buildDefaultTops((_, model) => ({
+      baseFile: "template_log_top_model.json",
+      output: (wood) => `${wood.modelsDir}/${model}.json`,
+      replacer: (wood) => ({
+        regex: /TEMPLATE_LOG_TEXTURE/g,
+        value: resIds(wood).TOP,
+      }),
+    })),
+
+    LOG_EDGES: LogModelPacker.buildEdges((side, model) => ({
+      baseFile: "template_log_edge_model.json",
+      output: `${Ctx.WORK_DIR}/${Dir.models()}/block/${model}.json`,
+      replacer: {
+        regex: /TEMPLATE_EDGE_TEXTURE/g,
+        value: mcId(logEdges()[side]),
+      },
+    })),
+
+    BARK_VARIANTS: BarkModelPacker.buildVariants((idx, model) => ({
+      baseFile: "template_side_model.json",
+      output: (wood) => `${wood.modelsDir}/${model}.json`,
+      replacer: (wood) => ({
+        regex: /TEMPLATE_TEXTURE/g,
+        value: idx >= 12 ? wood.resId() : resIds(wood).VARIANTS[idx],
       }),
     })),
   },

@@ -14,18 +14,28 @@ export const Common = {
 
   /** @param {BaseWoodAssets} wood */
   updateWood(wood) {
-    if (WoodFacts.isStripped(wood)) return;
+    const isStripped = WoodFacts.isStripped(wood);
 
     execSync(`mkdir -p ${wood.blockstatesDir}`);
     execSync(`mkdir -p ${wood.modelsDir}`);
 
     Dir.makeTemp(`tmp/common/${wood.assetPath}`, async (dir) => {
-      await SpriteMaker.COMMON.updateTopSprites(dir, wood);
-      SpriteMaker.COMMON.updateLogSideSprites(dir, wood);
+      Templates.BLOCKSTATES.WOOD.defineFor(wood);
+      Templates.MODELS.BARK_VARIANTS.defineFor(wood);
+      Templates.MODELS.DEFAULT_LOG_TOPS.defineFor(wood);
 
-      Templates.BLOCKSTATES.LOG.defineFor(wood);
-      Templates.MODELS.LOG_SIDES.defineFor(wood);
-      Templates.MODELS.LOG_TOPS.defineFor(wood);
+      if (isStripped) {
+        Templates.BLOCKSTATES.STRIPPED_LOG.defineFor(wood);
+      } else {
+        Templates.BLOCKSTATES.LOG.defineFor(wood);
+        Templates.MODELS.LOG_SIDES.defineFor(wood);
+        Templates.MODELS.LOG_TOPS.defineFor(wood);
+
+        await SpriteMaker.COMMON.updateTopSprites(dir, wood);
+        SpriteMaker.COMMON.updateLogSideSprites(dir, wood);
+      }
+
+      await SpriteMaker.COMMON.updateVariantSprites(dir, wood);
     });
   },
 
@@ -33,6 +43,7 @@ export const Common = {
     const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
 
     const woodAssets = allWoods.map((wood) => Wood.baseAssets(wood));
+    Templates.MODELS.LOG_EDGES.defineAll();
 
     for (const wood of woodAssets) {
       Common.updateWood(wood);

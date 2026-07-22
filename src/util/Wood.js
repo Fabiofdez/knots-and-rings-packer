@@ -69,6 +69,17 @@ export const Wood = {
       logTop() {
         return /** @type {const} */ (`${this.logAsset}_top`);
       },
+
+      bark() {
+        return /** @type {const} */ (`${this.type}_bark`);
+      },
+
+      /** @returns {`${ReturnType<BaseWoodAssets["bark"]>}_${number}`[]} */
+      barkVariants() {
+        return Array(12)
+          .fill(this.bark())
+          .map((variant, idx) => `${variant}_${idx + 1}`);
+      },
     });
 
     if (!WOOD_CACHE[wood.id]) WOOD_CACHE[wood.id] = wood;

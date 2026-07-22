@@ -41,7 +41,7 @@ export const Dir = /** @type {const} */ ({
     const absolutePath = `${Ctx.WORK_DIR}/${tmpDir}`;
 
     execSync(`mkdir -p ${absolutePath}`);
-    await predicate(tmpDir);
+    await predicate(absolutePath);
     execSync(`rm -r ${absolutePath}`);
   },
 });

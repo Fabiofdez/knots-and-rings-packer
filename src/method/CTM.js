@@ -19,7 +19,7 @@ export const CTM = {
 
     Dir.makeTemp(`tmp/ctm/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
-      if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
+      // if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         removeDirs(wood);
@@ -29,8 +29,8 @@ export const CTM = {
 
       // if (!isStripped) Templates.CTM.TOP.defineFor(wood);
       if (hasVariants) {
-        Templates.CTM.LOG_VARIANTS.defineFor(wood);
-        Templates.CTM.WOOD_VARIANTS.defineFor(wood);
+        // Templates.CTM.LOG_VARIANTS.defineFor(wood);
+        // Templates.CTM.WOOD_VARIANTS.defineFor(wood);
       }
 
       console.log(`...updated '${wood.id}' wood type`);
@@ -48,14 +48,23 @@ export const CTM = {
     /**
      * @param {WoodAssetsCTM} wood
      * @param {boolean} isTrunk
+     * @param {string} axis
      */
-    const state = (wood, isTrunk) => `${wood.logBlock}:is_trunk=${isTrunk}`;
+    const state = (wood, isTrunk, axis) => {
+      if (WoodFacts.isStripped(wood)) return `${wood.logBlock}:axis=${axis}`;
+      return `${wood.logBlock}:is_trunk=${isTrunk}:axis=${axis}`;
+    };
 
+    /**
+     * @type {{
+     *   [k: string]: (wood: WoodAssetsCTM, isTrunk: boolean) => string;
+     * }}
+     */
     const blockStateTransform = {
-      x: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=x`,
-      y: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=y`,
-      z_horizontal: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=z`,
-      z_vertical: (wood, isTrunk) => `${state(wood, isTrunk)}:axis=z`,
+      x: (wood, isTrunk) => state(wood, isTrunk, "x"),
+      y: (wood, isTrunk) => state(wood, isTrunk, "y"),
+      z_horizontal: (wood, isTrunk) => state(wood, isTrunk, "z"),
+      z_vertical: (wood, isTrunk) => state(wood, isTrunk, "z"),
       wood: (wood) => wood.woodBlock,
     };
 
@@ -75,7 +84,7 @@ export const CTM = {
         .filter((line) => !line.startsWith("matchBlocks"));
 
       const updatedProps = [
-        "matchBlocks=" + [...new Set(matchBlocks)].sort().join(" "),
+        `matchBlocks=${[...new Set(matchBlocks)].sort().join(" ")}`,
         ...otherProps,
       ];
       writeFileSync(propsPath, updatedProps.join("\n").trim() + "\n");
@@ -87,7 +96,7 @@ export const CTM = {
     console.log(`Updating all ${allWoods.length} wood types...`);
 
     const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
-    CTM.updateEdges(woodAssets);
+    // CTM.updateEdges(woodAssets);
 
     for (const wood of woodAssets) {
       CTM.updateWood(wood);

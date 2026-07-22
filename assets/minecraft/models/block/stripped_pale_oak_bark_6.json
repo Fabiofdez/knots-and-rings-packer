@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face",
+  "textures": {
+    "texture": "minecraft:block/stripped_pale_oak_bark_6"
+  }
+}

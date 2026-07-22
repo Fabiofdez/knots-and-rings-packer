@@ -83,7 +83,7 @@ function join(cmdOpts, spriteFiles, outputFile, ...opts) {
 }
 
 const FusionRemaps = {
-  TOP: {
+  CTM_FULL: {
     Third: {
       TOP: "top_third.png",
       MIDDLE: "middle_third.png",
@@ -96,7 +96,7 @@ const FusionRemaps = {
       BOTTOM: `${pngs(34, 46, 23, 22, 9, 21, 32, 33, 35, 47, 11, 10, 8, 20, 44, 45)}`,
 
       THIRDS() {
-        return Object.values(FusionRemaps.TOP.Third).join(" ");
+        return Object.values(FusionRemaps.CTM_FULL.Third).join(" ");
       },
     },
 
@@ -151,7 +151,7 @@ export const SpriteMaker = {
       const logSides = wood.logFaces();
       execSync(`cp ${tmpDir}/24.png ${wood.texturesDir}/${logSides.SM}.png`);
       execSync(`cp ${tmpDir}/25.png ${wood.texturesDir}/${logSides.LEFT}.png`);
-      execSync(`cp ${tmpDir}/26.png ${wood.texturesDir}/${logSides.CORE}.png`);
+      execSync(`cp ${tmpDir}/47.png ${wood.texturesDir}/${logSides.CORE}.png`);
       execSync(`cp ${tmpDir}/27.png ${wood.texturesDir}/${logSides.RIGHT}.png`);
     },
 
@@ -165,15 +165,27 @@ export const SpriteMaker = {
       if (!splitTopSprites(tmpDir, wood)) return;
       execSync(`rm -f ${tmpDir}/47.png`);
 
-      const baseTexture = wood.logFaces().TOP;
-      execSync(`for f in *.png ; do mv -- "$f" "${baseTexture}_$f" ; done`, {
-        cwd: tmpDir,
+      await orderTextures(tmpDir, wood.logFaces().TOP, wood);
+    },
+
+    /**
+     * @param {string} tmpDir
+     * @param {BaseWoodAssets} wood
+     */
+    async updateVariantSprites(tmpDir, wood) {
+      execSync(`rm -f ${tmpDir}/*`);
+
+      const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
+      if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
+
+      const original = `${spritesPath}/${wood.assetPath}.png`;
+      split({ cwd: tmpDir }, original, scene(1));
+      addDefaultSprite(tmpDir, wood);
+
+      await orderTextures(tmpDir, wood.bark(), wood);
+      execSync(`mv ${wood.bark()}_0.png ${wood.logAsset}.png`, {
+        cwd: wood.texturesDir,
       });
-
-      /** @type {typeof isPNG} */
-      const mask = (file) => isPNG(file) && file.startsWith(`${baseTexture}_`);
-
-      await filterChangedSprites(tmpDir, wood.texturesDir, mask);
     },
   },
 
@@ -219,7 +231,7 @@ export const SpriteMaker = {
 
       if (!splitTopSprites(tmpDir, wood)) return;
 
-      const { Sprites, Third, MergeOpts } = FusionRemaps.TOP;
+      const { Sprites, Third, MergeOpts } = FusionRemaps.CTM_FULL;
       join({ cwd: tmpDir }, Sprites.TOP, Third.TOP, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.MIDDLE, Third.MIDDLE, ...MergeOpts.PART);
       join({ cwd: tmpDir }, Sprites.BOTTOM, Third.BOTTOM, ...MergeOpts.PART);
@@ -261,12 +273,13 @@ export const SpriteMaker = {
     async updateLogEdgeSprites(tmpDir) {
       clearPNGs(tmpDir);
 
+      // TODO: nonexistent path
       const edgesDirCTM = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/_overlays/edges/live_logs/logs_vertical`;
       execSync(`cp [0-2].png ${tmpDir}/`, { cwd: edgesDirCTM });
 
       const outFile = "log_edges.png";
       const outPath = `${tmpDir}/${outFile}`;
-      const destDir = `${Ctx.WORK_DIR}/${Dir.textures()}`;
+      const destDir = `${Ctx.WORK_DIR}/${Dir.textures()}/block`;
 
       const { Sprites, MergeOpts } = FusionRemaps.LOG_EDGES;
       join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
@@ -282,12 +295,15 @@ export const SpriteMaker = {
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.EDGE_SPRITES}`;
       split({ cwd: tmpDir }, `${spritesPath}/edges-wood.png`, scene(0));
 
+      const { Sprites, Third, MergeOpts } = FusionRemaps.CTM_FULL;
+      join({ cwd: tmpDir }, Sprites.TOP, Third.TOP, ...MergeOpts.PART);
+      join({ cwd: tmpDir }, Sprites.MIDDLE, Third.MIDDLE, ...MergeOpts.PART);
+      join({ cwd: tmpDir }, Sprites.BOTTOM, Third.BOTTOM, ...MergeOpts.PART);
+
       const outFile = "wood_edges.png";
       const outPath = `${tmpDir}/${outFile}`;
-      const destDir = `${Ctx.WORK_DIR}/${Dir.textures()}`;
-
-      const { Sprites, MergeOpts } = FusionRemaps.WOOD_EDGES;
-      join({ cwd: tmpDir }, Sprites, outPath, ...MergeOpts);
+      const destDir = `${Ctx.WORK_DIR}/${Dir.textures()}/block`;
+      join({ cwd: tmpDir }, Sprites.THIRDS(), outPath, ...MergeOpts.FINAL);
 
       cleanDir({ cwd: tmpDir }, outFile);
       await filterChangedSprites(tmpDir, destDir, (file) => file === outFile);
@@ -359,6 +375,22 @@ function splitTopSprites(tmpDir, wood) {
   split({ cwd: tmpDir }, original, scene(0));
 
   return true;
+}
+
+/**
+ * @param {string} tmpDir
+ * @param {string} baseTexture
+ * @param {BaseWoodAssets} wood
+ */
+async function orderTextures(tmpDir, baseTexture, wood) {
+  execSync(`for f in *.png ; do mv -- "$f" "${baseTexture}_$f" ; done`, {
+    cwd: tmpDir,
+  });
+
+  /** @type {typeof isPNG} */
+  const mask = (file) => isPNG(file) && file.startsWith(`${baseTexture}_`);
+
+  await filterChangedSprites(tmpDir, wood.texturesDir, mask);
 }
 
 async function filterChangedSprites(tmpDir, destDir, mask = isPNG) {

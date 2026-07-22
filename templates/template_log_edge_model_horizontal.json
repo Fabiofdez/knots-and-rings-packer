@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_edge_face_horizontal",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "texture": "TEMPLATE_EDGE_TEXTURE"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "textures": {
+    "particle": "#texture"
+  },
+  "elements": [
+    {
+      "from": [0, 16.01, 0],
+      "to": [16, 16.01, 16],
+      "faces": {
+        "up": { "texture": "#texture", "rotation": 90, "cullface": "up" }
+      }
+    }
+  ]
+}

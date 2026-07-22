@@ -21,7 +21,7 @@ export const Fusion = {
 
     Dir.makeTemp(`tmp/fusion/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
-      if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
+      // if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) {
         execSync(`rm -rf ${dir}`);
@@ -32,8 +32,8 @@ export const Fusion = {
 
       // if (!isStripped) Templates.Fusion.TOP.defineFor(wood);
       if (hasVariants) {
-        Templates.Fusion.LOG_VARIANTS.defineFor(wood);
-        Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
+        // Templates.Fusion.LOG_VARIANTS.defineFor(wood);
+        // Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
       }
 
       console.log(`...updated '${wood.id}' wood type`);
@@ -70,6 +70,7 @@ export const Fusion = {
       WOOD: [],
     };
 
+    // TODO: remove unneeded modifiers
     for (const wood of woodAssets) {
       targets.CHOPPED_LOG.x.push(withState(wood.logBlock, false, "x"));
       targets.CHOPPED_LOG.y.push(withState(wood.logBlock, false, "y"));
@@ -107,8 +108,8 @@ export const Fusion = {
       saveModifier(filePredicate("z"), targetSet.z);
     };
 
-    saveModifierSet((axis) => `live_log_edges_${axis}.json`, targets.LIVE_LOG);
-    saveModifierSet((axis) => `log_edges_${axis}.json`, targets.CHOPPED_LOG);
+    // saveModifierSet((axis) => `live_log_edges_${axis}.json`, targets.LIVE_LOG);
+    // saveModifierSet((axis) => `log_edges_${axis}.json`, targets.CHOPPED_LOG);
     saveModifier("wood_edges.json", targets.WOOD);
   },
 
@@ -119,10 +120,10 @@ export const Fusion = {
     const woodAssets = allWoods.map((wood) => Wood.assetsFusion(wood));
     Fusion.updateEdges(woodAssets);
 
-    // Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/edges`, async (dir) => {
-    //   await SpriteMaker.Fusion.updateLogEdgeSprites(dir);
-    //   await SpriteMaker.Fusion.updateWoodEdgeSprites(dir);
-    // });
+    Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/edges`, async (dir) => {
+      // await SpriteMaker.Fusion.updateLogEdgeSprites(dir);
+      await SpriteMaker.Fusion.updateWoodEdgeSprites(dir);
+    });
 
     for (const wood of woodAssets) {
       Fusion.updateWood(wood);

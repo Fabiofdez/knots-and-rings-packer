@@ -1,0 +1,310 @@
+{
+  "multipart": [
+    {
+      "apply": [
+        { "model": "T_LOG_BARK_horizontal", "X_0": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "X_0": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_8_horizontal", "X_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "X_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "X_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "X_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "X_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_2_horizontal", "X_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "X_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "X_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "X_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "X_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "X_0": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_BARK_2_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "X_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8_horizontal", "X_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "X_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "X_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "X_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "X_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_1_horizontal", "X_1": "TEMPLATE", "weight": 20 },
+        { "model": "T_LOG_BARK_horizontal", "X_1": "TEMPLATE", "weight": 50 }
+      ],
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_LOG_BARK_horizontal", "X_2": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "X_2": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "X_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8_horizontal", "X_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "X_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "X_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "X_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "X_2": "TEMPLATE", "weight": 1 }
+      ],
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_BARK_8_horizontal", "X_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "X_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "X_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_5_horizontal", "X_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "X_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "X_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_11_horizontal", "X_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "X_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_LOG_BARK_horizontal", "X_3": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "X_3": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2_horizontal", "X_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "X_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "X_3": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+
+    {
+      "apply": [
+        { "model": "T_BARK_8", "Y_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9", "Y_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10", "Y_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_5", "Y_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6", "Y_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7", "Y_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_11", "Y_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12", "Y_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_LOG_BARK", "Y_0": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1", "Y_0": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2", "Y_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3", "Y_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4", "Y_0": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_LOG_BARK", "Y_1": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1", "Y_1": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_8", "Y_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9", "Y_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10", "Y_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11", "Y_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12", "Y_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_2", "Y_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3", "Y_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4", "Y_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5", "Y_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6", "Y_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7", "Y_1": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_BARK_2", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7", "Y_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8", "Y_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9", "Y_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10", "Y_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11", "Y_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12", "Y_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_1", "Y_2": "TEMPLATE", "weight": 20 },
+        { "model": "T_LOG_BARK", "Y_2": "TEMPLATE", "weight": 50 }
+      ],
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_LOG_BARK", "Y_3": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1", "Y_3": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7", "Y_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8", "Y_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9", "Y_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10", "Y_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11", "Y_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12", "Y_3": "TEMPLATE", "weight": 1 }
+      ],
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+
+    {
+      "apply": [
+        { "model": "T_LOG_BARK_horizontal", "Z_0": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "Z_0": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_8_horizontal", "Z_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "Z_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "Z_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "Z_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "Z_0": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_2_horizontal", "Z_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "Z_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "Z_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "Z_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "Z_0": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "Z_0": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_BARK_2_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "Z_1": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8_horizontal", "Z_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "Z_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "Z_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "Z_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "Z_1": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_1_horizontal", "Z_1": "TEMPLATE", "weight": 20 },
+        { "model": "T_LOG_BARK_horizontal", "Z_1": "TEMPLATE", "weight": 50 }
+      ],
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_LOG_BARK_horizontal", "Z_2": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "Z_2": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_5_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "Z_2": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_8_horizontal", "Z_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "Z_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "Z_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_11_horizontal", "Z_2": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "Z_2": "TEMPLATE", "weight": 1 }
+      ],
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": [
+        { "model": "T_BARK_8_horizontal", "Z_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_9_horizontal", "Z_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_10_horizontal", "Z_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_5_horizontal", "Z_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_6_horizontal", "Z_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_7_horizontal", "Z_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_11_horizontal", "Z_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_BARK_12_horizontal", "Z_3": "TEMPLATE", "weight": 1 },
+        { "model": "T_LOG_BARK_horizontal", "Z_3": "TEMPLATE", "weight": 50 },
+        { "model": "T_BARK_1_horizontal", "Z_3": "TEMPLATE", "weight": 20 },
+        { "model": "T_BARK_2_horizontal", "Z_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_3_horizontal", "Z_3": "TEMPLATE", "weight": 5 },
+        { "model": "T_BARK_4_horizontal", "Z_3": "TEMPLATE", "weight": 5 }
+      ],
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+
+    {
+      "apply": { "model": "TEMPLATE_LOG_TOP", "x": -90, "y": -90 },
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": { "model": "TEMPLATE_LOG_TOP" },
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": { "model": "TEMPLATE_LOG_TOP", "x": -90 },
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "X_0": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "X_1": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "X_2": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "X_3": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "x" }] }
+    },
+
+    {
+      "apply": { "model": "TEMPLATE_LOG_EDGES_SM", "Y_0": "TEMPLATE" },
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": { "model": "TEMPLATE_LOG_EDGES_SM", "Y_1": "TEMPLATE" },
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": { "model": "TEMPLATE_LOG_EDGES_SM", "Y_2": "TEMPLATE" },
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+    {
+      "apply": { "model": "TEMPLATE_LOG_EDGES_SM", "Y_3": "TEMPLATE" },
+      "when": { "AND": [{ "axis": "y" }] }
+    },
+
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "Z_0": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "Z_1": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "Z_2": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "z" }] }
+    },
+    {
+      "apply": {
+        "model": "TEMPLATE_LOG_EDGES_SM_horizontal",
+        "Z_3": "TEMPLATE"
+      },
+      "when": { "AND": [{ "axis": "z" }] }
+    }
+  ]
+}

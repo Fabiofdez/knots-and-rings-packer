@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face_horizontal",
+  "textures": {
+    "texture": "minecraft:block/jungle_bark_8"
+  }
+}
