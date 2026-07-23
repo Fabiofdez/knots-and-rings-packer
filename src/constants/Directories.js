@@ -1,5 +1,6 @@
 import { Ctx } from "@const/RunContext";
 import { execSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 export const Namespace = {
   VANILLA: "minecraft",
@@ -42,6 +43,6 @@ export const Dir = /** @type {const} */ ({
 
     execSync(`mkdir -p ${absolutePath}`);
     await predicate(absolutePath);
-    execSync(`rm -r ${absolutePath}`);
+    if (existsSync(absolutePath)) execSync(`rm -r ${absolutePath}`);
   },
 });

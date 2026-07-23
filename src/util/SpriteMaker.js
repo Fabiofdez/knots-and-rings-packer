@@ -1,11 +1,14 @@
-import { Dir } from "@const/Directories";
+import { Dir, Namespace } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { SpriteType } from "@const/SpriteTypes";
 import { LOGGER } from "@util/Logger";
+import { WoodFacts } from "@util/Wood";
 import looksSame from "looks-same";
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { extname } from "node:path";
+
+const { TOPS, VARIANT } = SpriteType;
 
 /** @param {string[]} args */
 function cleanArgs(args = []) {
@@ -146,7 +149,10 @@ export const SpriteMaker = {
     updateLogSideSprites(tmpDir, wood) {
       execSync(`rm -f ${tmpDir}/*`);
 
-      if (!splitTopSprites(tmpDir, wood)) return;
+      if (!splitTopSprites(tmpDir, wood)) {
+        LOGGER.warn(`Spritesheet (${TOPS}) for '${wood.id}' not found`);
+        return;
+      }
 
       const logSides = wood.logFaces();
       execSync(`cp ${tmpDir}/24.png ${wood.texturesDir}/${logSides.SM}.png`);
@@ -176,7 +182,10 @@ export const SpriteMaker = {
       execSync(`rm -f ${tmpDir}/*`);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
-      if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
+      if (!hasSpritesheet(spritesPath, wood)) {
+        LOGGER.warn(`Spritesheet (${VARIANT}) for '${wood.id}' not found`);
+        return;
+      }
 
       const original = `${spritesPath}/${wood.assetPath}.png`;
       split({ cwd: tmpDir }, original, scene(1));
@@ -211,7 +220,7 @@ export const SpriteMaker = {
       execSync(`rm -f ${tmpDir}/*`);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
-      if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
+      if (!hasSpritesheet(spritesPath, wood)) return;
 
       const original = `${spritesPath}/${wood.assetPath}.png`;
       split({ cwd: tmpDir }, original, scene(1));
@@ -252,7 +261,7 @@ export const SpriteMaker = {
       clearPNGs(tmpDir);
 
       const spritesPath = `${Ctx.DOWNLOADS}/${Dir.VARIANT_SPRITES}`;
-      if (!hasSpritesheet(spritesPath, SpriteType.VARIANT, wood)) return;
+      if (!hasSpritesheet(spritesPath, wood)) return;
 
       const original = `${spritesPath}/${wood.assetPath}.png`;
       split({ cwd: tmpDir }, original, scene(1));
@@ -331,13 +340,12 @@ export const SpriteMaker = {
  * @param {string} spriteType
  * @param {WoodAssetsFusion} wood
  */
-function hasSpritesheet(dir, spriteType, wood) {
+function hasSpritesheet(dir, wood) {
   const filePath = `${dir}/${wood.assetPath}.png`;
   const exists = existsSync(filePath);
 
   if (exists) return true;
 
-  LOGGER.warn(`Spritesheet (${spriteType}) for '${wood.id}' not found`);
   if (Ctx.NEW_WOODS?.[wood.id]) {
     Ctx.NEW_WOODS = { ...Ctx.NEW_WOODS, [wood.id]: false };
   }
@@ -369,7 +377,7 @@ function clearPNGs(dir) {
  */
 function splitTopSprites(tmpDir, wood) {
   const spritesPath = `${Ctx.DOWNLOADS}/${Dir.TOP_SPRITES}`;
-  if (!hasSpritesheet(spritesPath, SpriteType.TOPS, wood)) return false;
+  if (!hasSpritesheet(spritesPath, wood)) return false;
 
   const original = `${spritesPath}/${wood.assetPath}.png`;
   split({ cwd: tmpDir }, original, scene(0));

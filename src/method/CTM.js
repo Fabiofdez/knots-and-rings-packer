@@ -2,9 +2,6 @@ import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
 import { Common } from "@methods/Common";
-import { LOGGER } from "@util/Logger";
-import { SpriteMaker } from "@util/SpriteMaker";
-import { Templates } from "@util/Templates";
 import { Wood, WoodFacts } from "@util/Wood";
 import { globSync } from "glob";
 import { execSync } from "node:child_process";
@@ -15,25 +12,19 @@ export const CTM = {
   updateWood(wood) {
     const isStripped = WoodFacts.isStripped(wood);
     const hasVariants = WoodTypes.hasVariants(wood);
-    setUpDirs(wood, isStripped, hasVariants);
+    // setUpDirs(wood, isStripped, hasVariants);
 
     Dir.makeTemp(`tmp/ctm/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) await SpriteMaker.CTM.updateTopSprites(dir, wood);
       // if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
 
-      if (!Ctx.NEW_WOODS?.[wood.id]) {
-        removeDirs(wood);
-        execSync(`rm -rf ${dir}`);
-        LOGGER.err(`Failed to update '${wood.id}' wood type`);
-      }
+      if (!Ctx.NEW_WOODS?.[wood.id]) return removeDirs(wood);
 
       // if (!isStripped) Templates.CTM.TOP.defineFor(wood);
-      if (hasVariants) {
-        // Templates.CTM.LOG_VARIANTS.defineFor(wood);
-        // Templates.CTM.WOOD_VARIANTS.defineFor(wood);
-      }
-
-      console.log(`...updated '${wood.id}' wood type`);
+      // if (hasVariants) {
+      //   Templates.CTM.LOG_VARIANTS.defineFor(wood);
+      //   Templates.CTM.WOOD_VARIANTS.defineFor(wood);
+      // }
     });
   },
 
@@ -123,11 +114,11 @@ function setUpDirs(wood, isStripped, makeVariants) {
     if (!makeVariants && isStripped) execSync(`rm -rf ${wood.variantsDir}`);
   }
 
-  // if (!existingTops) {
-  //   if (!isStripped) execSync(`mkdir -p ${wood.topsDir}`);
-  // } else {
-  //   if (isStripped) execSync(`rm -rf ${wood.topsDir}`);
-  // }
+  if (!existingTops) {
+    if (!isStripped) execSync(`mkdir -p ${wood.topsDir}`);
+  } else {
+    if (isStripped) execSync(`rm -rf ${wood.topsDir}`);
+  }
 
   Common.markToUpdate(wood);
 }

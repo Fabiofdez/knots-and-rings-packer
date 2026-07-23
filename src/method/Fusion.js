@@ -2,9 +2,7 @@ import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
 import { Common } from "@methods/Common";
-import { LOGGER } from "@util/Logger";
 import { SpriteMaker } from "@util/SpriteMaker";
-import { Templates } from "@util/Templates";
 import { Wood, WoodFacts } from "@util/Wood";
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -17,26 +15,22 @@ export const Fusion = {
   /** @param {WoodAssetsFusion} wood */
   updateWood(wood) {
     const hasVariants = WoodTypes.hasVariants(wood);
-    setUpDirs(wood);
+    const isStripped = WoodFacts.isStripped(wood);
+    // setUpDirs(wood);
 
     Dir.makeTemp(`tmp/fusion/${wood.assetPath}`, async (dir) => {
       // if (!isStripped) SpriteMaker.Fusion.updateTopSprites(dir, wood);
       // if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
 
-      if (!Ctx.NEW_WOODS?.[wood.id]) {
-        execSync(`rm -rf ${dir}`);
-        LOGGER.err(`Failed to update '${wood.id}' wood type`);
-      }
+      if (!Ctx.NEW_WOODS?.[wood.id]) return;
 
       // await SpriteMaker.Fusion.collectNewAssets(dir, wood);
 
       // if (!isStripped) Templates.Fusion.TOP.defineFor(wood);
-      if (hasVariants) {
-        // Templates.Fusion.LOG_VARIANTS.defineFor(wood);
-        // Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
-      }
-
-      console.log(`...updated '${wood.id}' wood type`);
+      // if (hasVariants) {
+      //   Templates.Fusion.LOG_VARIANTS.defineFor(wood);
+      //   Templates.Fusion.WOOD_VARIANTS.defineFor(wood);
+      // }
     });
   },
 

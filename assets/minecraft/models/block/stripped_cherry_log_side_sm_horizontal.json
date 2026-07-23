@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face_horizontal",
+  "textures": {
+    "texture": "minecraft:block/stripped_cherry_log_side_sm"
+  }
+}
