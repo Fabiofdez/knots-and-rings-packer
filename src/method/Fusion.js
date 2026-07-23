@@ -119,9 +119,9 @@ export const Fusion = {
       await SpriteMaker.Fusion.updateWoodEdgeSprites(dir);
     });
 
-    for (const wood of woodAssets) {
-      Fusion.updateWood(wood);
-    }
+    // for (const wood of woodAssets) {
+    //   Fusion.updateWood(wood);
+    // }
   },
 };
 

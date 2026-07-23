@@ -10,6 +10,11 @@ import { execSync } from "child_process";
 const THIS_FILE = "index.js";
 
 /**
+ * @template {Arg} T
+ * @typedef {T["values"][number]} ArgValues
+ */
+
+/**
  * @typedef {{
  *   name: string;
  *   optional?: boolean;
@@ -25,13 +30,16 @@ const THIS_FILE = "index.js";
  * }} Option
  */
 
-/** @type {Arg} */
-const METHOD = {
+/**
+ * @typedef {ArgValues<typeof METHOD>} MethodValues
+ * @satisfies {Arg}
+ */
+const METHOD = /** @type {const} */ ({
   name: "METHOD",
   optional: true,
-  default: "ctm",
-  values: ["ctm", "fusion"],
-};
+  default: "common",
+  values: ["common", "ctm", "fusion"],
+});
 
 /** @type {Option[]} */
 export const ARG_OPTIONS = [
@@ -84,35 +92,72 @@ function getShellConst(varName) {
 
 /**
  * @param {string} woodType
- * @param {"ctm" | "fusion"} method
+ * @param {MethodValues} method
  */
-function updateWood(woodType, method = "ctm") {
+function updateWood(woodType, method = "common") {
   if (!woodType) LOGGER.errOfferHelp("Wood type must be provided");
 
-  Common.updateWood(Wood.baseAssets(woodType));
+  switch (method) {
+    case "common":
+      Common.updateWood(Wood.baseAssets(woodType));
+      break;
 
-  if (method === "fusion") {
-    Fusion.updateWood(Wood.assetsFusion(woodType));
-  } else {
-    CTM.updateWood(Wood.assetsCTM(woodType));
+    case "ctm":
+      CTM.updateWood(Wood.assetsCTM(woodType));
+      break;
+
+    case "fusion":
+      Fusion.updateWood(Wood.assetsFusion(woodType));
+      break;
   }
 }
 
-function updateAll(method = "ctm") {
-  Common.updateAll();
+/** @param {MethodValues} method */
+function updateAll(method = "common") {
+  switch (method) {
+    case "common":
+      return Common.updateAll();
 
-  if (method === "fusion") Fusion.updateAll();
-  else CTM.updateAll();
+    case "ctm":
+      return CTM.updateAll();
+
+    case "fusion":
+      return Fusion.updateAll();
+  }
 }
 
-/** @param {"ctm" | "fusion"} method */
-function rezip(method = "ctm") {
-  const zipInfo = method === "fusion" ? Zip.Fusion : Zip.CTM;
-  const fileList = [...zipInfo.SRC, "pack.png"].join(" ");
+/** @param {MethodValues} method */
+function rezip(method = "common") {
+  /** @type {ZipInfo} */
+  let zipInfo;
 
-  execSync(`cp ${zipInfo.MCMETA} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
-  execSync(`zip -9rq ${zipInfo.PACK_NAME} ${fileList}`, { cwd: Ctx.WORK_DIR });
-  execSync(`zip -m ${zipInfo.PACK_NAME} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+  switch (method) {
+    case "common":
+      zipInfo = Zip.Common;
+      break;
+
+    case "ctm":
+      zipInfo = Zip.CTM;
+      break;
+
+    case "fusion":
+      zipInfo = Zip.Fusion;
+      break;
+  }
+
+  const { packName, include, exclude, mcMeta } = zipInfo;
+
+  let contents = [...include, "pack.png"].join(" ");
+  if (exclude instanceof Array) {
+    contents = `${contents} -x ${exclude.join(" ")}`;
+  }
+
+  execSync(`zip -9qr ${packName} ${contents}`, { cwd: Ctx.WORK_DIR });
+
+  if (mcMeta) {
+    execSync(`cp ${mcMeta} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+    execSync(`zip -9qm ${packName} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
+  }
 
   console.log("Resource Pack re-zipped!\n");
 }

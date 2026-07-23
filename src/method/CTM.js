@@ -32,8 +32,9 @@ export const CTM = {
   updateEdges(woodAssets) {
     const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/_overlays/edges`;
     const ctmEdgesProps = globSync([
-      `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
-      `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
+      // `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
+      // `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
+      `${ctmEdgesDir}/live_logs/wood/wood.ctm.properties`,
     ]);
 
     /**
@@ -87,11 +88,11 @@ export const CTM = {
     console.log(`Updating all ${allWoods.length} wood types...`);
 
     const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
-    // CTM.updateEdges(woodAssets);
+    CTM.updateEdges(woodAssets);
 
-    for (const wood of woodAssets) {
-      CTM.updateWood(wood);
-    }
+    // for (const wood of woodAssets) {
+    //   CTM.updateWood(wood);
+    // }
   },
 };
 

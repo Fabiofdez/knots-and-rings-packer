@@ -95,3 +95,12 @@
  *   defProvider: (side: EdgeSide, model: string) => EdgeTemplateDef,
  * ) => EdgePropTemplate} EdgeModelTemplateProvider
  */
+
+/**
+ * @typedef {{
+ *   packName: string;
+ *   include: string[];
+ *   exclude?: string[];
+ *   mcMeta?: string;
+ * }} ZipInfo
+ */
