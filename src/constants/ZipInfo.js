@@ -10,7 +10,7 @@ export const Zip = /** @type {const} */ ({
     include: ["assets/*/blockstates", "assets/*/models", "assets/*/textures"],
     exclude: [
       `${mcModels}/block/wood_edges.json`,
-      `${mcTextures}/block/wood_edges.png`,
+      `${mcTextures}/block/wood_edges.*`,
     ],
     mcMeta: "default.pack.mcmeta",
   },
@@ -26,7 +26,7 @@ export const Zip = /** @type {const} */ ({
     include: [
       "assets/minecraft/fusion",
       `${mcModels}/block/wood_edges.json`,
-      `${mcTextures}/block/wood_edges.png`,
+      `${mcTextures}/block/wood_edges.*`,
     ],
     mcMeta: "fusion.pack.mcmeta",
   },
