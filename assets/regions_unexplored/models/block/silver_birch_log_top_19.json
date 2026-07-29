@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_column_ends",
+  "textures": {
+    "texture": "regions_unexplored:block/silver_birch_log_top_19"
+  }
+}

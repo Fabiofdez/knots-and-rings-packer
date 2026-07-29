@@ -1,14 +1,14 @@
-import { Dir, Namespace } from "@const/Directories";
+import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { SpriteType } from "@const/SpriteTypes";
+import { WoodTypes } from "@const/WoodTypes";
 import { LOGGER } from "@util/Logger";
-import { WoodFacts } from "@util/Wood";
 import looksSame from "looks-same";
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { extname } from "node:path";
 
-const { TOPS, VARIANT } = SpriteType;
+const { TOPS, SIDES, VARIANT } = SpriteType;
 
 /** @param {string[]} args */
 function cleanArgs(args = []) {
@@ -149,16 +149,30 @@ export const SpriteMaker = {
     updateLogSideSprites(tmpDir, wood) {
       execSync(`rm -f ${tmpDir}/*`);
 
-      if (!splitTopSprites(tmpDir, wood)) {
-        LOGGER.warn(`Spritesheet (${TOPS}) for '${wood.id}' not found`);
+      const customSides = WoodTypes.hasCustomSides(wood);
+
+      /** @type {{ [k in keyof LogFaceMapping]: number }} */
+      const idxMapping = {
+        SM: customSides ? 0 : 24,
+        LEFT: customSides ? 1 : 25,
+        CORE: customSides ? 2 : 47,
+        RIGHT: customSides ? 3 : 27,
+      };
+
+      const sideSprites = customSides ? Dir.SIDE_SPRITES : Dir.TOP_SPRITES;
+      const spriteType = customSides ? SIDES : TOPS;
+      if (!splitSprites(tmpDir, wood, sideSprites)) {
+        LOGGER.warn(`Spritesheet (${spriteType}) for '${wood.id}' not found`);
         return;
       }
 
-      const logSides = wood.logFaces();
-      execSync(`cp ${tmpDir}/24.png ${wood.texturesDir}/${logSides.SM}.png`);
-      execSync(`cp ${tmpDir}/25.png ${wood.texturesDir}/${logSides.LEFT}.png`);
-      execSync(`cp ${tmpDir}/47.png ${wood.texturesDir}/${logSides.CORE}.png`);
-      execSync(`cp ${tmpDir}/27.png ${wood.texturesDir}/${logSides.RIGHT}.png`);
+      const logFaces = wood.logFaces();
+      Object.entries(idxMapping)
+        .map(([side, idx]) => ({
+          src: `${tmpDir}/${idx}.png`,
+          dst: `${wood.texturesDir}/${logFaces[side]}.png`,
+        }))
+        .forEach(({ src, dst }) => execSync(`cp ${src} ${dst}`));
     },
 
     /**
@@ -168,10 +182,13 @@ export const SpriteMaker = {
     async updateTopSprites(tmpDir, wood) {
       execSync(`rm -f ${tmpDir}/*`);
 
-      if (!splitTopSprites(tmpDir, wood)) return;
+      if (!splitSprites(tmpDir, wood)) return;
       execSync(`rm -f ${tmpDir}/47.png`);
 
-      await orderTextures(tmpDir, wood.logFaces().TOP, wood);
+      const logTop = wood.logFaces().TOP;
+      execSync(`mv ${tmpDir}/0.png ${tmpDir}/${logTop}.png`);
+
+      await orderTextures(tmpDir, logTop, wood);
     },
 
     /**
@@ -206,7 +223,7 @@ export const SpriteMaker = {
     async updateTopSprites(tmpDir, wood) {
       execSync(`rm -f ${tmpDir}/*`);
 
-      if (!splitTopSprites(tmpDir, wood)) return;
+      if (!splitSprites(tmpDir, wood)) return;
       execSync(`rm -f ${tmpDir}/47.png`);
 
       await filterChangedSprites(tmpDir, wood.topsDir);
@@ -238,7 +255,7 @@ export const SpriteMaker = {
     updateTopSprites(tmpDir, wood) {
       clearPNGs(tmpDir);
 
-      if (!splitTopSprites(tmpDir, wood)) return;
+      if (!splitSprites(tmpDir, wood)) return;
 
       const { Sprites, Third, MergeOpts } = FusionRemaps.CTM_FULL;
       join({ cwd: tmpDir }, Sprites.TOP, Third.TOP, ...MergeOpts.PART);
@@ -374,9 +391,10 @@ function clearPNGs(dir) {
 /**
  * @param {string} tmpDir
  * @param {BaseWoodAssets} wood
+ * @param {string} spritesDir
  */
-function splitTopSprites(tmpDir, wood) {
-  const spritesPath = `${Ctx.DOWNLOADS}/${Dir.TOP_SPRITES}`;
+function splitSprites(tmpDir, wood, spritesDir = Dir.TOP_SPRITES) {
+  const spritesPath = `${Ctx.DOWNLOADS}/${spritesDir}`;
   if (!hasSpritesheet(spritesPath, wood)) return false;
 
   const original = `${spritesPath}/${wood.assetPath}.png`;
@@ -391,7 +409,7 @@ function splitTopSprites(tmpDir, wood) {
  * @param {BaseWoodAssets} wood
  */
 async function orderTextures(tmpDir, baseTexture, wood) {
-  execSync(`for f in *.png ; do mv -- "$f" "${baseTexture}_$f" ; done`, {
+  execSync(`for f in [0-9]*.png ; do mv -- "$f" "${baseTexture}_$f" ; done`, {
     cwd: tmpDir,
   });
 

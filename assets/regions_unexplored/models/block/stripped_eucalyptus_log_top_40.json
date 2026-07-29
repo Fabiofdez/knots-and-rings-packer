@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_column_ends",
+  "textures": {
+    "texture": "regions_unexplored:block/stripped_eucalyptus_log_top_40"
+  }
+}

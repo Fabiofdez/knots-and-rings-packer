@@ -17,8 +17,6 @@
  *
  * @typedef {ReturnType<BaseWoodAssets["resId"]>} ModelId
  *
- * @typedef {keyof LogFaceMapping} LogFace
- *
  * @typedef {{ [Key in keyof LogFaceMapping]: ModelId } & {
  *   VARIANTS: ModelId[];
  * }} WoodResIdMapping
@@ -69,7 +67,10 @@
 /**
  * @template T, U
  * @typedef {(
- *   defProvider: (arg1: T, model: LogFaceMapping[LogFace]) => TemplateDef<U>,
+ *   defProvider: (
+ *     arg1: T,
+ *     model: LogFaceMapping[keyof LogFaceMapping],
+ *   ) => TemplateDef<U>,
  * ) => PropTemplate<U>} LogModelTemplateProvider
  */
 

@@ -32,6 +32,7 @@ export const Dir = /** @type {const} */ ({
   DEFAULT_SPRITES: "Knotted_Wood/sprite_defaults",
   VARIANT_SPRITES: "Knotted_Wood/spritesheet_variants",
   TOP_SPRITES: "Knotted_Wood/spritesheet_tops",
+  SIDE_SPRITES: "Knotted_Wood/spritesheet_sides",
   EDGE_SPRITES: "Knotted_Wood/spritesheet_edges",
 
   /**

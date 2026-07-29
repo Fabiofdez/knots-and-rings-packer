@@ -1,0 +1,21 @@
+{
+  "textures": {
+    "particle": "#texture"
+  },
+  "elements": [
+    {
+      "from": [0, 16, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "up": { "texture": "#texture", "rotation": 90, "cullface": "up" }
+      }
+    },
+    {
+      "from": [0, 16, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "up": { "texture": "#overlay", "rotation": 90, "cullface": "up", "tintindex": 0 }
+      }
+    }
+  ]
+}

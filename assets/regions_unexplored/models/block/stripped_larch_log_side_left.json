@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face",
+  "textures": {
+    "texture": "regions_unexplored:block/stripped_larch_log_side_left"
+  }
+}

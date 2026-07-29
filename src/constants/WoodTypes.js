@@ -1,4 +1,6 @@
-export const WoodTypes = {
+/** @typedef {(typeof WoodTypes)["VANILLA" | "REGIONS_UNEXPLORED"][number]} WoodType */
+
+export const WoodTypes = /** @type {const} */ ({
   VANILLA: [
     "acacia",
     "birch",
@@ -21,7 +23,7 @@ export const WoodTypes = {
   ],
 
   REGIONS_UNEXPLORED: [
-    // "regions_unexplored:alpha_oak",
+    // "regions_unexplored:alpha",
     "regions_unexplored:ashen",
     "regions_unexplored:baobab",
     "regions_unexplored:blackwood",
@@ -38,7 +40,7 @@ export const WoodTypes = {
     "regions_unexplored:palm",
     "regions_unexplored:pine",
     "regions_unexplored:redwood",
-    // "regions_unexplored:silver_birch",
+    "regions_unexplored:silver_birch",
     "regions_unexplored:socotra",
     "regions_unexplored:willow",
     "regions_unexplored:wisteria",
@@ -62,12 +64,57 @@ export const WoodTypes = {
     "regions_unexplored:stripped_wisteria",
   ],
 
-  hasVariants,
+  /** @param {{ id: WoodType }} wood */
+  hasVariants(wood) {
+    return !customProperties[wood.id]?.noVariants;
+  },
+
+  /** @param {{ id: WoodType }} wood */
+  getOverlay(wood) {
+    return customProperties[wood.id]?.overlay;
+  },
+
+  /** @param {{ id: WoodType }} wood */
+  hasCustomSides(wood) {
+    return customProperties[wood.id]?.customSides;
+  },
+
+  /** @param {{ id: WoodType }} wood */
+  conditionalOverlay(wood) {
+    return customProperties[wood.id]?.conditionalOverlay;
+  },
+});
+
+/**
+ * @typedef {{
+ *   overlay?: "tint" | "";
+ *   noVariants?: boolean;
+ *   customSides?: boolean;
+ *   conditionalOverlay?: { conditionName: string; overlayTexture: string };
+ * }} WoodProperties
+ *
+ * @type {{ [Key in WoodType]?: WoodProperties }}
+ */
+const customProperties = {
+  "regions_unexplored:eucalyptus": {
+    overlay: "tint",
+    noVariants: true,
+  },
+
+  "regions_unexplored:palm": { customSides: true },
+  "regions_unexplored:stripped_palm": { customSides: true },
+
+  "regions_unexplored:pine": {
+    conditionalOverlay: {
+      conditionName: "transition_block",
+      overlayTexture: "pine_log_transition",
+    },
+  },
+
+  "regions_unexplored:silver_birch": {
+    conditionalOverlay: {
+      conditionName: "is_base",
+      overlayTexture: "silver_birch_log_base",
+    },
+  },
 };
-
-/** @param {BaseWoodAssets} wood */
-function hasVariants(wood) {
-  return !noVariants.includes(wood.id);
-}
-
-const noVariants = ["regions_unexplored:eucalyptus"];

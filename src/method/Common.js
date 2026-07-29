@@ -21,9 +21,11 @@ export const Common = {
     execSync(`mkdir -p ${wood.modelsDir}`);
 
     const isStripped = WoodFacts.isStripped(wood);
+    const hasVariants = WoodTypes.hasVariants(wood);
+    const condOverlay = WoodTypes.conditionalOverlay(wood);
 
     Dir.makeTemp(`tmp/common/${wood.assetPath}`, async (dir) => {
-      await SpriteMaker.COMMON.updateVariantSprites(dir, wood);
+      if (hasVariants) await SpriteMaker.COMMON.updateVariantSprites(dir, wood);
       await SpriteMaker.COMMON.updateTopSprites(dir, wood);
       SpriteMaker.COMMON.updateLogSideSprites(dir, wood);
 
@@ -34,13 +36,20 @@ export const Common = {
       }
 
       if (isStripped) Templates.BLOCKSTATES.STRIPPED_LOG.defineFor(wood);
-      else Templates.BLOCKSTATES.LOG.defineFor(wood);
+      else if (condOverlay) Templates.BLOCKSTATES.LOG_OVERLAY.defineFor(wood);
+      else if (hasVariants) Templates.BLOCKSTATES.LOG.defineFor(wood);
+      else Templates.BLOCKSTATES.LOG_NO_VARIANTS.defineFor(wood);
+
+      if (hasVariants) Templates.BLOCKSTATES.WOOD.defineFor(wood);
+      else Templates.BLOCKSTATES.WOOD_NO_VARIANTS.defineFor(wood);
+
+      if (hasVariants) {
+        Templates.MODELS.BARK_VARIANTS.defineFor(wood);
+        if (condOverlay) Templates.MODELS.BARK_OVERLAY_VARIANTS.defineFor(wood);
+      }
 
       Templates.MODELS.LOG_SIDES.defineFor(wood);
       Templates.MODELS.LOG_TOPS.defineFor(wood);
-
-      Templates.BLOCKSTATES.WOOD.defineFor(wood);
-      Templates.MODELS.BARK_VARIANTS.defineFor(wood);
       Templates.MODELS.DEFAULT_LOG_TOPS.defineFor(wood);
     });
 

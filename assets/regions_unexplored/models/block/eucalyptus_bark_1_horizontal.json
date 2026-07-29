@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/template_single_face_horizontal",
-  "textures": {
-    "texture": "regions_unexplored:block/eucalyptus_bark_1"
-  }
-}

@@ -1,5 +1,6 @@
 import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
+import { WoodTypes } from "@const/WoodTypes";
 import { WoodFacts } from "@util/Wood";
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -57,6 +58,10 @@ const SIDES_TO_TOP = [
   "1111",
 ];
 
+const NUMBERED_TOPS = [...SIDES_TO_TOP.keys()].slice(1);
+
+const _H = "_horizontal";
+
 /**
  * @param {BaseWoodAssets} wood
  * @returns {WoodResIdMapping}
@@ -101,16 +106,36 @@ function replaceTarget(content, { regex = /TEMPLATE_BLOCK/g, value }) {
   return content.replace(regex, value);
 }
 
+/** @param {TemplateDef<BaseWoodAssets} def */
+function makeHorizontal(def) {
+  const [withoutExt] = def.baseFile.split(".json");
+  def.baseFile = `${withoutExt + _H}.json`;
+
+  return def;
+}
+
 /**
  * @param {TemplateDef<BaseWoodAssets} def
- * @returns {TemplateDef<BaseWoodAssets}
+ * @param {string} overlay
  */
-function makeHorizontal(def) {
-  let { baseFile } = def;
-  const [withoutExt] = baseFile.split(".json");
-  baseFile = `${withoutExt}_horizontal.json`;
+function withOverlay(def, overlay = "") {
+  const suffix = ["overlay", overlay].filter((str) => str).join("_");
+  const [withoutExt] = def.baseFile.split(".json");
+  def.baseFile = `${withoutExt}_${suffix}.json`;
 
-  return { ...def, baseFile };
+  return def;
+}
+
+/**
+ * @param {BaseWoodAssets} wood
+ * @param {keyof LogFaceMapping} side
+ * @returns {Replacement}
+ */
+function sideTexture(wood, side) {
+  return {
+    regex: /TEMPLATE_TEXTURE/g,
+    value: side === "BARK" ? wood.resId() : resIds(wood)[side],
+  };
 }
 
 /** @type {TemplateProvider<BaseWoodAssets>} */
@@ -144,18 +169,30 @@ const buildCTM = build;
 /** @type {TemplateProvider<WoodAssetsFusion>} */
 const buildFusion = build;
 
-const LogModelPacker = {
-  /** @type {LogModelTemplateProvider<LogFace, BaseWoodAssets>} */
+const LogModels = {
+  /** @type {LogModelTemplateProvider<keyof LogFaceMapping, BaseWoodAssets>} */
   buildSides: (defProvider) => ({
     defineFor(wood) {
       const { TOP, ...logSides } = wood.logFaces();
+
+      const overlay = WoodTypes.getOverlay(wood);
+      if (typeof overlay === "string") {
+        const barkModel = logSides.BARK;
+        delete logSides.BARK;
+
+        let def = withOverlay(defProvider("BARK", barkModel), overlay);
+        build(def).defineFor(wood);
+
+        def = withOverlay(defProvider("BARK", barkModel + _H), overlay);
+        build(makeHorizontal(def)).defineFor(wood);
+      }
 
       Object.entries(logSides)
         .map(([side, model]) => defProvider(side, model))
         .forEach((def) => build(def).defineFor(wood));
 
       Object.entries(logSides)
-        .map(([side, model]) => defProvider(side, `${model}_horizontal`))
+        .map(([side, model]) => defProvider(side, model + _H))
         .forEach((def) => build(makeHorizontal(def)).defineFor(wood));
     },
   }),
@@ -165,7 +202,7 @@ const LogModelPacker = {
     defineFor(wood) {
       const model = wood.logFaces().TOP;
 
-      SIDES_TO_TOP.keys()
+      NUMBERED_TOPS
         .map((idx) => defProvider(idx, model))
         .forEach((def) => build(def).defineFor(wood));
     },
@@ -189,13 +226,13 @@ const LogModelPacker = {
         .forEach((def) => build(def).defineFor());
 
       Object.entries(edges)
-        .map(([side, model]) => defProvider(side, `${model}_horizontal`))
+        .map(([side, model]) => defProvider(side, model + _H))
         .forEach((def) => build(makeHorizontal(def)).defineFor());
     },
   }),
 };
 
-const BarkModelPacker = {
+const BarkModels = {
   /** @type {BarkModelTemplateProvider<Number, BaseWoodAssets>} */
   buildVariants: (defProvider) => ({
     defineFor(wood) {
@@ -207,7 +244,24 @@ const BarkModelPacker = {
         .forEach((def) => build(def).defineFor(wood));
 
       variants
-        .map((model, idx) => defProvider(idx, `${model}_horizontal`))
+        .map((model, idx) => defProvider(idx, model + _H))
+        .forEach((def) => build(makeHorizontal(def)).defineFor(wood));
+    },
+  }),
+
+  /** @type {BarkModelTemplateProvider<Number, BaseWoodAssets>} */
+  buildOverlayVariants: (defProvider) => ({
+    defineFor(wood) {
+      const variants = [...wood.barkVariants(), wood.logFaces().BARK].map(
+        (model) => `${model}_overlay`,
+      );
+
+      variants
+        .map((model, idx) => withOverlay(defProvider(idx, model)))
+        .forEach((def) => build(def).defineFor(wood));
+
+      variants
+        .map((model, idx) => withOverlay(defProvider(idx, model + _H)))
         .forEach((def) => build(makeHorizontal(def)).defineFor(wood));
     },
   }),
@@ -226,7 +280,14 @@ function rotate(axes = {}) {
 const modelBarkReplacements = (wood) => [
   { regex: /T_LOG_BARK/g, value: resIds(wood).BARK },
   { regex: /T_BARK/g, value: wood.resId(wood.bark()) },
+  { regex: /_H/g, value: _H },
 ];
+
+/** @type {WoodMultiPredicate<BaseWoodAssets>} */
+const modelConditionReplacement = (wood) => ({
+  regex: /CONDITION_PROP/g,
+  value: WoodTypes.conditionalOverlay(wood)?.conditionName,
+});
 
 /** @type {Replacement[]} */
 const modelOrientationReplacements = [
@@ -247,7 +308,7 @@ const modelOrientationReplacements = [
 ];
 
 /** @type {TemplateDef<BaseWoodAssets>} */
-const logBlockstateDef = {
+const logBlockStateDef = {
   output: (wood) => `${wood.blockstatesDir}/${wood.logAsset}.json`,
   replacer: (wood) => [
     { regex: /TEMPLATE_LOG_DEFAULT/g, value: wood.resId() },
@@ -258,6 +319,8 @@ const logBlockstateDef = {
     { regex: /TEMPLATE_LOG_TOP/g, value: resIds(wood).TOP },
     ...modelBarkReplacements(wood),
 
+    modelConditionReplacement(wood),
+
     { regex: /TEMPLATE_LOG_EDGES_SM/g, value: mcId(logEdges().SM) },
     { regex: /TEMPLATE_LOG_EDGES_LEFT/g, value: mcId(logEdges().LEFT) },
     { regex: /TEMPLATE_LOG_EDGES_RIGHT/g, value: mcId(logEdges().RIGHT) },
@@ -267,41 +330,58 @@ const logBlockstateDef = {
   postProcess: (json) => JSON.stringify(JSON.parse(json)),
 };
 
+/** @type {TemplateDef<BaseWoodAssets>} */
+const woodBlockStateDef = {
+  output: (wood) => `${wood.blockstatesDir}/${wood.woodAsset}.json`,
+  replacer: (wood) => [
+    ...modelBarkReplacements(wood),
+    ...modelOrientationReplacements,
+  ],
+  postProcess: (json) => JSON.stringify(JSON.parse(json)),
+};
+
 export const Templates = {
   BLOCKSTATES: {
     LOG: build({
-      baseFile: "template_log_blockstates.json",
-      ...logBlockstateDef,
+      baseFile: "blockstates/log.json",
+      ...logBlockStateDef,
+    }),
+
+    LOG_NO_VARIANTS: build({
+      baseFile: "blockstates/log_no_variants.json",
+      ...logBlockStateDef,
+    }),
+
+    LOG_OVERLAY: build({
+      baseFile: "blockstates/log_conditional_overlay.json",
+      ...logBlockStateDef,
     }),
 
     STRIPPED_LOG: build({
-      baseFile: "template_stripped_log_blockstates.json",
-      ...logBlockstateDef,
+      baseFile: "blockstates/stripped_log.json",
+      ...logBlockStateDef,
     }),
 
     WOOD: build({
-      baseFile: "template_wood_blockstates.json",
-      output: (wood) => `${wood.blockstatesDir}/${wood.woodAsset}.json`,
-      replacer: (wood) => [
-        ...modelBarkReplacements(wood),
-        ...modelOrientationReplacements,
-      ],
-      postProcess: (json) => JSON.stringify(JSON.parse(json)),
+      baseFile: "blockstates/wood.json",
+      ...woodBlockStateDef,
+    }),
+
+    WOOD_NO_VARIANTS: build({
+      baseFile: "blockstates/wood_no_variants.json",
+      ...woodBlockStateDef,
     }),
   },
 
   MODELS: {
-    LOG_SIDES: LogModelPacker.buildSides((side, model) => ({
-      baseFile: "template_side_model.json",
+    LOG_SIDES: LogModels.buildSides((side, model) => ({
+      baseFile: "models/side.json",
       output: (wood) => `${wood.modelsDir}/${model}.json`,
-      replacer: (wood) => ({
-        regex: /TEMPLATE_TEXTURE/g,
-        value: side === "BARK" ? wood.resId() : resIds(wood)[side],
-      }),
+      replacer: (wood) => sideTexture(wood, side),
     })),
 
-    LOG_TOPS: LogModelPacker.buildTops((idx, model) => ({
-      baseFile: "template_log_top_model.json",
+    LOG_TOPS: LogModels.buildTops((idx, model) => ({
+      baseFile: "models/log_top.json",
       output: (wood) => `${wood.modelsDir}/${model}_${idx}.json`,
       replacer: (wood) => ({
         regex: /TEMPLATE_LOG_TEXTURE/g,
@@ -309,8 +389,8 @@ export const Templates = {
       }),
     })),
 
-    DEFAULT_LOG_TOPS: LogModelPacker.buildDefaultTops((_, model) => ({
-      baseFile: "template_log_top_model.json",
+    DEFAULT_LOG_TOPS: LogModels.buildDefaultTops((_, model) => ({
+      baseFile: "models/log_top.json",
       output: (wood) => `${wood.modelsDir}/${model}.json`,
       replacer: (wood) => ({
         regex: /TEMPLATE_LOG_TEXTURE/g,
@@ -318,8 +398,8 @@ export const Templates = {
       }),
     })),
 
-    LOG_EDGES: LogModelPacker.buildEdges((side, model) => ({
-      baseFile: "template_log_edge_model.json",
+    LOG_EDGES: LogModels.buildEdges((side, model) => ({
+      baseFile: "models/log_edge.json",
       output: `${Ctx.WORK_DIR}/${Dir.models()}/block/${model}.json`,
       replacer: {
         regex: /TEMPLATE_EDGE_TEXTURE/g,
@@ -327,13 +407,28 @@ export const Templates = {
       },
     })),
 
-    BARK_VARIANTS: BarkModelPacker.buildVariants((idx, model) => ({
-      baseFile: "template_side_model.json",
+    BARK_VARIANTS: BarkModels.buildVariants((idx, model) => ({
+      baseFile: "models/side.json",
       output: (wood) => `${wood.modelsDir}/${model}.json`,
       replacer: (wood) => ({
         regex: /TEMPLATE_TEXTURE/g,
         value: idx >= 12 ? wood.resId() : resIds(wood).VARIANTS[idx],
       }),
+    })),
+
+    BARK_OVERLAY_VARIANTS: BarkModels.buildOverlayVariants((idx, model) => ({
+      baseFile: "models/side.json",
+      output: (wood) => `${wood.modelsDir}/${model}.json`,
+      replacer: (wood) => [
+        {
+          regex: /TEMPLATE_TEXTURE_overlay/g,
+          value: wood.resId(WoodTypes.conditionalOverlay(wood).overlayTexture),
+        },
+        {
+          regex: /TEMPLATE_TEXTURE/g,
+          value: idx >= 12 ? wood.resId() : resIds(wood).VARIANTS[idx],
+        },
+      ],
     })),
   },
 

@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/template_single_face",
+  "parent": "minecraft:block/template_single_face_overlay_tint",
   "textures": {
-    "texture": "regions_unexplored:block/eucalyptus_log"
+    "texture": "regions_unexplored:block/eucalyptus_log",
+    "overlay": "regions_unexplored:block/eucalyptus_log_overlay"
   }
 }

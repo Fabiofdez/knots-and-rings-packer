@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_single_face_horizontal",
+  "textures": {
+    "texture": "regions_unexplored:block/stripped_wisteria_log_side_left"
+  }
+}

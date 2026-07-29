@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_single_face_overlay",
+  "textures": {
+    "texture": "TEMPLATE_TEXTURE",
+    "overlay": "TEMPLATE_TEXTURE_overlay"
+  }
+}
