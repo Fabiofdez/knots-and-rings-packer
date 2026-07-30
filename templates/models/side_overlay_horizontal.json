@@ -1,5 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay_horizontal",
+  "render_type": "translucent",
   "textures": {
     "texture": "TEMPLATE_TEXTURE",
     "overlay": "TEMPLATE_TEXTURE_overlay"

@@ -11,8 +11,8 @@
       }
     },
     {
-      "from": [0, 0, 0],
-      "to": [16, 16, 0],
+      "from": [0, 0, -0.008],
+      "to": [16, 16, -0.008],
       "faces": {
         "north": { "texture": "#overlay", "cullface": "north", "tintindex": 0 }
       }

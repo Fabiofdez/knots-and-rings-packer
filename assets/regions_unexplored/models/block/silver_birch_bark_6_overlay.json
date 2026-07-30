@@ -1,5 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay",
+  "render_type": "translucent",
   "textures": {
     "texture": "regions_unexplored:block/silver_birch_bark_6",
     "overlay": "regions_unexplored:block/silver_birch_log_base"
