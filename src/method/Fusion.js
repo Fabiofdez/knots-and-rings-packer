@@ -64,19 +64,18 @@ export const Fusion = {
       WOOD: [],
     };
 
-    // TODO: remove unneeded modifiers
     for (const wood of woodAssets) {
-      targets.CHOPPED_LOG.x.push(withState(wood.logBlock, false, "x"));
-      targets.CHOPPED_LOG.y.push(withState(wood.logBlock, false, "y"));
-      targets.CHOPPED_LOG.z.push(withState(wood.logBlock, false, "z"));
+      // targets.CHOPPED_LOG.x.push(withState(wood.logBlock, false, "x"));
+      // targets.CHOPPED_LOG.y.push(withState(wood.logBlock, false, "y"));
+      // targets.CHOPPED_LOG.z.push(withState(wood.logBlock, false, "z"));
 
       targets.WOOD.push(wood.woodBlock);
 
-      if (WoodFacts.isStripped(wood)) continue;
+      // if (WoodFacts.isStripped(wood)) continue;
 
-      targets.LIVE_LOG.x.push(withState(wood.logBlock, true, "x"));
-      targets.LIVE_LOG.y.push(withState(wood.logBlock, true, "y"));
-      targets.LIVE_LOG.z.push(withState(wood.logBlock, true, "z"));
+      // targets.LIVE_LOG.x.push(withState(wood.logBlock, true, "x"));
+      // targets.LIVE_LOG.y.push(withState(wood.logBlock, true, "y"));
+      // targets.LIVE_LOG.z.push(withState(wood.logBlock, true, "z"));
     }
 
     /**

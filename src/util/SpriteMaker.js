@@ -299,8 +299,7 @@ export const SpriteMaker = {
     async updateLogEdgeSprites(tmpDir) {
       clearPNGs(tmpDir);
 
-      // TODO: nonexistent path
-      const edgesDirCTM = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/_overlays/edges/live_logs/logs_vertical`;
+      const edgesDirCTM = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/wood_edges`;
       execSync(`cp [0-2].png ${tmpDir}/`, { cwd: edgesDirCTM });
 
       const outFile = "log_edges.png";

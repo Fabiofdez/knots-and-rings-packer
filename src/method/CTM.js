@@ -30,11 +30,11 @@ export const CTM = {
 
   /** @param {WoodAssetsCTM[]} woodAssets */
   updateEdges(woodAssets) {
-    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/_overlays/edges`;
+    const ctmEdgesDir = `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}`;
     const ctmEdgesProps = globSync([
       // `${ctmEdgesDir}/live_logs/*/*.ctm.properties`,
       // `${ctmEdgesDir}/chopped_logs/*/*.ctm.properties`,
-      `${ctmEdgesDir}/live_logs/wood/wood.ctm.properties`,
+      `${ctmEdgesDir}/wood_edges/ctm.properties`,
     ]);
 
     /**
@@ -48,7 +48,7 @@ export const CTM = {
     };
 
     /**
-     * @type {{
+     * @satisfies {{
      *   [k: string]: (wood: WoodAssetsCTM, isTrunk: boolean) => string;
      * }}
      */
@@ -61,13 +61,15 @@ export const CTM = {
     };
 
     for (const propsPath of ctmEdgesProps) {
-      const [propsFile, _, ctxDir] = propsPath.split("/").reverse();
-      const [overlayType] = propsFile.split(".");
+      const [propsFile, _, ctxDir] = propsPath.split("/").reverse(); // TODO: ctxDir invalid
+      const [overlayType] = propsFile.split("."); // TODO: overlayType invalid
 
-      const trunkOnly = ctxDir === "live_logs" && overlayType !== "wood";
+      // const trunkOnly = ctxDir === "live_logs" && overlayType !== "wood";
+      const trunkOnly = false;
       const matchBlocks = woodAssets
         .filter((wood) => (trunkOnly ? !WoodFacts.isStripped(wood) : true))
-        .map((wood) => blockStateTransform[overlayType]?.(wood, trunkOnly))
+        // .map((wood) => blockStateTransform[overlayType]?.(wood, trunkOnly))
+        .map((wood) => blockStateTransform.wood(wood, trunkOnly))
         .filter((block) => block?.length > 0);
 
       const otherProps = readFileSync(propsPath)
