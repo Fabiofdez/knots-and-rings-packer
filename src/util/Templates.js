@@ -127,6 +127,30 @@ function withOverlay(def, overlay = "") {
 }
 
 /**
+ * @param {WoodAssetsCTM} wood
+ * @param {Object[]} properties
+ */
+function withProperties(wood, properties = [], withOverlay = false) {
+  const output = wood.logBlock;
+
+  let woodProperties = properties;
+  const overlay = WoodTypes.conditionalOverlay(wood);
+  if (overlay) {
+    woodProperties = [
+      ...properties,
+      { [overlay.conditionName]: `${withOverlay}` },
+    ];
+  }
+
+  const parsedProps = woodProperties
+    .map((propEntry) => Object.entries(propEntry)[0])
+    .map(([prop, values]) => `${prop}=${values.replace(/\|/g, ",")}`);
+
+  if (parsedProps.length) return [output, ...parsedProps].join(":");
+  return output;
+}
+
+/**
  * @param {BaseWoodAssets} wood
  * @param {keyof LogFaceMapping} side
  * @returns {Replacement}
@@ -202,9 +226,9 @@ const LogModels = {
     defineFor(wood) {
       const model = wood.logFaces().TOP;
 
-      NUMBERED_TOPS
-        .map((idx) => defProvider(idx, model))
-        .forEach((def) => build(def).defineFor(wood));
+      NUMBERED_TOPS.map((idx) => defProvider(idx, model)).forEach((def) =>
+        build(def).defineFor(wood),
+      );
     },
   }),
 
@@ -263,6 +287,47 @@ const BarkModels = {
       variants
         .map((model, idx) => withOverlay(defProvider(idx, model + _H)))
         .forEach((def) => build(makeHorizontal(def)).defineFor(wood));
+    },
+  }),
+};
+
+const PropetiesCTM = {
+  /** @type {EdgeCTMTemplateProvider} */
+  buildLogEdges: (defProvider) => ({
+    defineAll(woodAssets) {
+      const mappingsFile = `${Ctx.WORK_DIR}/templates/log_edges_ctm_mapping.json`;
+
+      /** @type {MappingCTM[]} */
+      const mappings = JSON.parse(readFileSync(mappingsFile).toString())?.files;
+
+      const isBase = (wood) => !WoodTypes.getOverlay(wood);
+      const isAlt = (wood) => {
+        return WoodTypes.getOverlay(wood) || WoodTypes.conditionalOverlay(wood);
+      };
+
+      const baseWoods = woodAssets.filter(isBase);
+      const altWoods = woodAssets.filter(isAlt);
+
+      mappings.forEach((mapping) => {
+        /** @type {typeof mapping} */
+        const baseMapping = JSON.parse(JSON.stringify(mapping));
+        baseMapping.matchBlocks = baseWoods
+          .map((wood) => withProperties(wood, baseMapping.properties))
+          .join(" ");
+
+        build(defProvider(baseMapping)).defineFor();
+        if (!altWoods.length) return;
+
+        /** @type {typeof mapping} */
+        const altMapping = JSON.parse(JSON.stringify(mapping));
+        altMapping.fileName += "_alt";
+        altMapping.tiles += "_alt";
+        altMapping.matchBlocks = altWoods
+          .map((wood) => withProperties(wood, altMapping.properties, true))
+          .join(" ");
+
+        build(defProvider(altMapping)).defineFor();
+      });
     },
   }),
 };
@@ -450,6 +515,22 @@ export const Templates = {
       output: (wood) => `${wood.topsDir}/ctm.properties`,
       replacer: (wood) => wood.logBlock,
     }),
+
+    // TODO: fill in ctm.properties for log edges,
+    // replacing the following:
+
+    // TEMPLATE_MATCH_BLOCKS
+    // TEMPLATE_TILES
+    // TEMPLATE_FACES
+    LOG_EDGES: PropetiesCTM.buildLogEdges((mapping) => ({
+      baseFile: "template_log_edges.ctm.properties",
+      output: `${Ctx.WORK_DIR}/${Dir.CTM.ROOT}/log_edges/${mapping.fileName}.ctm.properties`,
+      replacer: [
+        { regex: /TEMPLATE_MATCH_BLOCKS/g, value: mapping.matchBlocks },
+        { regex: /TEMPLATE_TILES/g, value: mapping.tiles },
+        { regex: /TEMPLATE_FACES/g, value: mapping.faces },
+      ],
+    })),
   },
 
   Fusion: {

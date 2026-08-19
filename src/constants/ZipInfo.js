@@ -9,6 +9,9 @@ export const Zip = /** @type {const} */ ({
     packName: "pack-standalone.zip",
     include: ["assets/*/blockstates", "assets/*/models", "assets/*/textures"],
     exclude: [
+      `${mcModels}/block/template_edge_*`,
+      `${mcModels}/block/log_edge_*`,
+      `${mcTextures}/block/log_edge_*`,
       `${mcModels}/block/wood_edges.json`,
       `${mcTextures}/block/wood_edges.*`,
     ],
@@ -25,6 +28,9 @@ export const Zip = /** @type {const} */ ({
     packName: "pack-standalone-fusion.zip",
     include: [
       "assets/minecraft/fusion",
+      `${mcModels}/block/template_edge_*`,
+      `${mcModels}/block/log_edge_*`,
+      `${mcTextures}/block/log_edge_*`,
       `${mcModels}/block/wood_edges.json`,
       `${mcTextures}/block/wood_edges.*`,
     ],

@@ -2,6 +2,7 @@ import { Dir } from "@const/Directories";
 import { Ctx } from "@const/RunContext";
 import { WoodTypes } from "@const/WoodTypes";
 import { Common } from "@methods/Common";
+import { Templates } from "@util/Templates";
 import { Wood, WoodFacts } from "@util/Wood";
 import { globSync } from "glob";
 import { execSync } from "node:child_process";
@@ -91,6 +92,8 @@ export const CTM = {
 
     const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
     CTM.updateEdges(woodAssets);
+
+    Templates.CTM.LOG_EDGES.defineAll(woodAssets);
 
     // for (const wood of woodAssets) {
     //   CTM.updateWood(wood);

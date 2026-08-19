@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay",
-  "render_type": "translucent",
+  "render_type": "cutout",
   "textures": {
     "texture": "regions_unexplored:block/pine_bark_5",
     "overlay": "regions_unexplored:block/pine_log_transition"

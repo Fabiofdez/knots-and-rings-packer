@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay",
-  "render_type": "translucent",
+  "render_type": "cutout",
   "textures": {
     "texture": "regions_unexplored:block/silver_birch_bark_12",
     "overlay": "regions_unexplored:block/silver_birch_log_base"

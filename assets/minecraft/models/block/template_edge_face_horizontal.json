@@ -4,8 +4,8 @@
   },
   "elements": [
     {
-      "from": [0, 16.02, 0],
-      "to": [16, 16.02, 16],
+      "from": [0, 16, 0],
+      "to": [16, 16, 16],
       "faces": {
         "up": { "texture": "#texture", "rotation": 90, "cullface": "up" }
       }

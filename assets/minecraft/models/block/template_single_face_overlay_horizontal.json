@@ -11,8 +11,8 @@
       }
     },
     {
-      "from": [0, 16.008, 0],
-      "to": [16, 16.008, 16],
+      "from": [0, 16, 0],
+      "to": [16, 16, 16],
       "faces": {
         "up": { "texture": "#overlay", "rotation": 90, "cullface": "up" }
       }

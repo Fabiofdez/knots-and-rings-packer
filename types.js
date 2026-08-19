@@ -82,8 +82,6 @@
  */
 
 /**
- * @typedef {{ defineAll: () => void }} EdgePropTemplate
- *
  * @typedef {{
  *   baseFile: string;
  *   output: string;
@@ -92,9 +90,31 @@
  * }} EdgeTemplateDef
  *
  *
+ * @typedef {{ defineAll: () => void }} EdgePropTemplate
+ *
  * @typedef {(
  *   defProvider: (side: EdgeSide, model: string) => EdgeTemplateDef,
  * ) => EdgePropTemplate} EdgeModelTemplateProvider
+ */
+
+/**
+ * @typedef {{
+ *   fileName: string;
+ *   properties: Object[];
+ *   matchBlocks: string;
+ *   tiles: string;
+ *   faces: string;
+ * }} MappingCTM
+ *
+ *
+ * @typedef {(wood: MappingCTM) => ReplaceTarget} MappingMultiPredicate
+ *
+ * @typedef {{ defineAll: (woodAssets: WoodAssetsCTM[]) => void }} EdgeCTMPropTemplate
+ *
+ *
+ * @typedef {(
+ *   defProvider: (mapping: MappingCTM) => EdgeTemplateDef,
+ * ) => EdgeCTMPropTemplate} EdgeCTMTemplateProvider
  */
 
 /**

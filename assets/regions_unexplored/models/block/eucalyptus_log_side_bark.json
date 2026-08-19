@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay_tint",
-  "render_type": "translucent",
+  "render_type": "cutout",
   "textures": {
     "texture": "regions_unexplored:block/eucalyptus_log",
     "overlay": "regions_unexplored:block/eucalyptus_log_overlay"

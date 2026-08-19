@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_single_face_overlay_tint_horizontal",
-  "render_type": "translucent",
+  "render_type": "cutout",
   "textures": {
     "texture": "TEMPLATE_TEXTURE",
     "overlay": "TEMPLATE_TEXTURE_overlay"

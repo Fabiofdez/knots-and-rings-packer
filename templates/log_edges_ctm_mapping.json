@@ -1,0 +1,226 @@
+{
+  "files": [
+    {
+      "fileName": "x_small_east",
+      "properties": [{ "axis": "x" }, { "sides": "0000|0010" }],
+      "tiles": "small_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "x_small_north",
+      "properties": [{ "axis": "x" }, { "sides": "0000|0001" }],
+      "tiles": "small_horizontal",
+      "faces": "north"
+    },
+    {
+      "fileName": "x_small_west",
+      "properties": [{ "axis": "x" }, { "sides": "0000|1000" }],
+      "tiles": "small_horizontal",
+      "faces": "west"
+    },
+    {
+      "fileName": "x_small_south",
+      "properties": [{ "axis": "x" }, { "sides": "0000|0100" }],
+      "tiles": "small_horizontal",
+      "faces": "south"
+    },
+    {
+      "fileName": "x_left_east",
+      "properties": [{ "axis": "x" }, { "sides": "0001|0011|00rl" }],
+      "tiles": "left_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "x_left_north",
+      "properties": [{ "axis": "x" }, { "sides": "1000|1001|l00r" }],
+      "tiles": "right_horizontal",
+      "faces": "north"
+    },
+    {
+      "fileName": "x_left_west",
+      "properties": [{ "axis": "x" }, { "sides": "0100|1100|rl00" }],
+      "tiles": "left_horizontal",
+      "faces": "west"
+    },
+    {
+      "fileName": "x_left_south",
+      "properties": [{ "axis": "x" }, { "sides": "0010|0110|0rl0" }],
+      "tiles": "left_horizontal",
+      "faces": "south"
+    },
+    {
+      "fileName": "x_right_east",
+      "properties": [{ "axis": "x" }, { "sides": "0100|0110|0rl0" }],
+      "tiles": "right_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "x_right_north",
+      "properties": [{ "axis": "x" }, { "sides": "0010|0011|00rl" }],
+      "tiles": "left_horizontal",
+      "faces": "north"
+    },
+    {
+      "fileName": "x_right_west",
+      "properties": [{ "axis": "x" }, { "sides": "0001|1001|l00r" }],
+      "tiles": "right_horizontal",
+      "faces": "west"
+    },
+    {
+      "fileName": "x_right_south",
+      "properties": [{ "axis": "x" }, { "sides": "1000|1100|rl00" }],
+      "tiles": "right_horizontal",
+      "faces": "south"
+    },
+
+    {
+      "fileName": "y_small_north",
+      "properties": [{ "axis": "y" }, { "sides": "0000|0010" }],
+      "tiles": "small",
+      "faces": "north"
+    },
+    {
+      "fileName": "y_small_east",
+      "properties": [{ "axis": "y" }, { "sides": "0000|0001" }],
+      "tiles": "small",
+      "faces": "east"
+    },
+    {
+      "fileName": "y_small_south",
+      "properties": [{ "axis": "y" }, { "sides": "0000|1000" }],
+      "tiles": "small",
+      "faces": "south"
+    },
+    {
+      "fileName": "y_small_west",
+      "properties": [{ "axis": "y" }, { "sides": "0000|0100" }],
+      "tiles": "small",
+      "faces": "west"
+    },
+
+    {
+      "fileName": "y_left_north",
+      "properties": [{ "axis": "y" }, { "sides": "0001|0011|00rl" }],
+      "tiles": "left",
+      "faces": "north"
+    },
+    {
+      "fileName": "y_left_east",
+      "properties": [{ "axis": "y" }, { "sides": "1000|1001|l00r" }],
+      "tiles": "left",
+      "faces": "east"
+    },
+    {
+      "fileName": "y_left_south",
+      "properties": [{ "axis": "y" }, { "sides": "0100|1100|rl00" }],
+      "tiles": "left",
+      "faces": "south"
+    },
+    {
+      "fileName": "y_left_west",
+      "properties": [{ "axis": "y" }, { "sides": "0010|0110|0rl0" }],
+      "tiles": "left",
+      "faces": "west"
+    },
+
+    {
+      "fileName": "y_right_north",
+      "properties": [{ "axis": "y" }, { "sides": "0100|0110|0rl0" }],
+      "tiles": "right",
+      "faces": "north"
+    },
+    {
+      "fileName": "y_right_east",
+      "properties": [{ "axis": "y" }, { "sides": "0010|0011|00rl" }],
+      "tiles": "right",
+      "faces": "east"
+    },
+    {
+      "fileName": "y_right_south",
+      "properties": [{ "axis": "y" }, { "sides": "0001|1001|l00r" }],
+      "tiles": "right",
+      "faces": "south"
+    },
+    {
+      "fileName": "y_right_west",
+      "properties": [{ "axis": "y" }, { "sides": "1000|1100|rl00" }],
+      "tiles": "right",
+      "faces": "west"
+    },
+
+    {
+      "fileName": "z_small_south",
+      "properties": [{ "axis": "z" }, { "sides": "0000|0010" }],
+      "tiles": "small",
+      "faces": "south"
+    },
+    {
+      "fileName": "z_small_east",
+      "properties": [{ "axis": "z" }, { "sides": "0000|0001" }],
+      "tiles": "small_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "z_small_north",
+      "properties": [{ "axis": "z" }, { "sides": "0000|1000" }],
+      "tiles": "small",
+      "faces": "north"
+    },
+    {
+      "fileName": "z_small_west",
+      "properties": [{ "axis": "z" }, { "sides": "0000|0100" }],
+      "tiles": "small_horizontal",
+      "faces": "west"
+    },
+
+    {
+      "fileName": "z_left_south",
+      "properties": [{ "axis": "z" }, { "sides": "0001|0011|00rl" }],
+      "tiles": "right",
+      "faces": "south"
+    },
+    {
+      "fileName": "z_left_east",
+      "properties": [{ "axis": "z" }, { "sides": "1000|1001|l00r" }],
+      "tiles": "right_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "z_left_north",
+      "properties": [{ "axis": "z" }, { "sides": "0100|1100|rl00" }],
+      "tiles": "left",
+      "faces": "north"
+    },
+    {
+      "fileName": "z_left_west",
+      "properties": [{ "axis": "z" }, { "sides": "0010|0110|0rl0" }],
+      "tiles": "left_horizontal",
+      "faces": "west"
+    },
+
+    {
+      "fileName": "z_right_south",
+      "properties": [{ "axis": "z" }, { "sides": "0100|0110|0rl0" }],
+      "tiles": "left",
+      "faces": "south"
+    },
+    {
+      "fileName": "z_right_east",
+      "properties": [{ "axis": "z" }, { "sides": "0010|0011|00rl" }],
+      "tiles": "left_horizontal",
+      "faces": "east"
+    },
+    {
+      "fileName": "z_right_north",
+      "properties": [{ "axis": "z" }, { "sides": "0001|1001|l00r" }],
+      "tiles": "right",
+      "faces": "north"
+    },
+    {
+      "fileName": "z_right_west",
+      "properties": [{ "axis": "z" }, { "sides": "1000|1100|rl00" }],
+      "tiles": "right_horizontal",
+      "faces": "west"
+    }
+  ]
+}
