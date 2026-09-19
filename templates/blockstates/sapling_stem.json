@@ -1,0 +1,101 @@
+{
+  "multipart": [
+    { "apply": { "model": "TEMPLATE_SAPLING_stem_particle" } },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_decaying_sprout" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout2" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout3" }
+      ],
+      "when": { "growth_stage": "1" }
+    },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sprout" },
+        { "model": "TEMPLATE_SAPLING_sprout2" },
+        { "model": "TEMPLATE_SAPLING_sprout3" }
+      ],
+      "when": { "growth_stage": "2" }
+    },
+
+    {
+      "apply": { "model": "TEMPLATE_SAPLING_sapling_trunk" },
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "single|3x3" }]
+      }
+    },
+    {
+      "apply": { "model": "TEMPLATE_SAPLING_sapling_trunk_corner" },
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "2x2" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_roots" },
+        { "model": "TEMPLATE_SAPLING_roots2" },
+        { "model": "TEMPLATE_SAPLING_roots3" },
+        { "model": "TEMPLATE_SAPLING_roots", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_roots2", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_roots3", "y": 90 }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_roots_corner" },
+        { "model": "TEMPLATE_SAPLING_roots2_corner" },
+        { "model": "TEMPLATE_SAPLING_roots3_corner" },
+        { "model": "TEMPLATE_SAPLING_roots4_corner" },
+        { "model": "TEMPLATE_SAPLING_roots5_corner" },
+        { "model": "TEMPLATE_SAPLING_roots6_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "2x2" }]
+      }
+    },
+
+    {
+      "apply": { "model": "TEMPLATE_SAPLING_giant_sapling_trunk" },
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "3x3" }]
+      }
+    },
+    {
+      "apply": { "model": "TEMPLATE_SAPLING_giant_sapling_trunk_corner" },
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "2x2" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_roots_large" },
+        { "model": "TEMPLATE_SAPLING_roots2_large" },
+        { "model": "TEMPLATE_SAPLING_roots3_large" },
+        { "model": "TEMPLATE_SAPLING_roots_large", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_roots2_large", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_roots3_large", "y": 90 }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_roots_large_corner" },
+        { "model": "TEMPLATE_SAPLING_roots2_large_corner" },
+        { "model": "TEMPLATE_SAPLING_roots3_large_corner" },
+        { "model": "TEMPLATE_SAPLING_roots4_large_corner" },
+        { "model": "TEMPLATE_SAPLING_roots5_large_corner" },
+        { "model": "TEMPLATE_SAPLING_roots6_large_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "2x2" }]
+      }
+    }
+  ]
+}

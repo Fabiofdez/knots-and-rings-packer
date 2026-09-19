@@ -1,0 +1,201 @@
+{
+  "multipart": [
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sprout" },
+        { "model": "TEMPLATE_SAPLING_sprout2" },
+        { "model": "TEMPLATE_SAPLING_sprout3" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "2" }, { "tree_shape": "single|3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sprout" },
+        { "model": "TEMPLATE_SAPLING_sprout2" },
+        { "model": "TEMPLATE_SAPLING_sprout3" }
+      ],
+      "when": {
+        "AND": [
+          { "growth_stage": "2" },
+          { "tree_shape": "2x2" },
+          { "tree_root": "north|northeast|east|southeast|south|southwest|west|northwest" }
+        ]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sprout_corner" },
+        { "model": "TEMPLATE_SAPLING_sprout2_corner" },
+        { "model": "TEMPLATE_SAPLING_sprout3_corner" }
+      ],
+      "when": {
+        "AND": [
+          { "growth_stage": "2" },
+          { "tree_shape": "2x2" },
+          { "tree_root": "self" }
+        ]
+      }
+    },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sapling" },
+        { "model": "TEMPLATE_SAPLING_sapling2" },
+        { "model": "TEMPLATE_SAPLING_sapling3" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "3" }, { "tree_shape": "single|3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sapling_corner" },
+        { "model": "TEMPLATE_SAPLING_sapling2_corner" },
+        { "model": "TEMPLATE_SAPLING_sapling3_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "3" }, { "tree_shape": "2x2" }]
+      }
+    },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_sapling_branches" },
+        { "model": "TEMPLATE_SAPLING_sapling_branches2" },
+        { "model": "TEMPLATE_SAPLING_sapling_branches3" },
+        { "model": "TEMPLATE_SAPLING_sapling_branches", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_sapling_branches2", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_sapling_branches3", "y": 90 }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "single" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches_corner" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches2_corner" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches3_corner" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches4_corner" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches5_corner" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches6_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "2x2" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches2" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches3" },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches2", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_tall_sapling_branches3", "y": 90 }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "4" }, { "tree_shape": "3x3" }]
+      }
+    },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches2_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches3_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches4_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches5_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches6_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "2x2" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_giant_sapling_canopy_corner" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_canopy2_corner" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "2x2" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches2" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches3" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches2", "y": 90 },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_branches3", "y": 90 }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_giant_sapling_canopy" },
+        { "model": "TEMPLATE_SAPLING_giant_sapling_canopy2" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "5" }, { "tree_shape": "3x3" }]
+      }
+    },
+
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_decaying_sprout" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout2" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout3" }
+      ],
+      "when": {
+        "AND": [{ "growth_stage": "1" }, { "tree_shape": "single|3x3" }]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_decaying_sprout" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout2" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout3" }
+      ],
+      "when": {
+        "AND": [
+          { "growth_stage": "1" },
+          { "tree_shape": "2x2" },
+          { "tree_root": "north|northeast|east|southeast|south|southwest|west|northwest" }
+        ]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_decaying_sprout_corner" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout2_corner" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout3_corner" }
+      ],
+      "when": {
+        "AND": [
+          { "growth_stage": "1" },
+          { "tree_shape": "2x2" },
+          { "tree_root": "self" }
+        ]
+      }
+    },
+    {
+      "apply": [
+        { "model": "TEMPLATE_SAPLING_decaying_sprout" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout2" },
+        { "model": "TEMPLATE_SAPLING_decaying_sprout3" }
+      ],
+      "when": {
+        "AND": [
+          { "growth_stage": "2" },
+          { "tree_shape": "2x2" },
+          { "tree_root": "self" }
+        ]
+      }
+    }
+  ]
+}

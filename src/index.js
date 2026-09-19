@@ -1,8 +1,9 @@
 import { Ctx } from "@const/RunContext";
-import { Zip } from "@const/ZipInfo";
+import { WoodTypes } from "@const/WoodTypes";
 import { Common } from "@methods/Common";
 import { CTM } from "@methods/CTM";
 import { Fusion } from "@methods/Fusion";
+import { Saplings } from "@methods/Saplings";
 import { LOGGER } from "@util/Logger";
 import { Wood } from "@util/Wood";
 import { execSync } from "child_process";
@@ -12,25 +13,14 @@ const THIS_FILE = "index.js";
 /**
  * @template {Arg} T
  * @typedef {T["values"][number]} ArgValues
- */
-
-/**
- * @typedef {{
- *   name: string;
- *   optional?: boolean;
- *   values?: string[];
- *   default: string;
- * }} Arg
- *
  *
  * @typedef {{
  *   cmds: string[];
  *   args?: (Arg | string)[];
  *   fn: Function;
  * }} Option
- */
-
-/**
+ *
+ *
  * @typedef {ArgValues<typeof METHOD>} MethodValues
  * @satisfies {Arg}
  */
@@ -38,7 +28,13 @@ const METHOD = /** @type {const} */ ({
   name: "METHOD",
   optional: true,
   default: "common",
-  values: ["common", "ctm", "fusion"],
+  values: ["common", "ctm", "fusion", "saplings"],
+});
+
+/** @satisfies {Arg} */
+const WOOD_NAMESPACE = /** @type {const} */ ({
+  name: "NAMESPACE",
+  optional: true,
 });
 
 /** @type {Option[]} */
@@ -54,8 +50,8 @@ export const ARG_OPTIONS = [
   },
   {
     cmds: ["-a", "--update-all"],
-    args: [METHOD],
-    fn: (method) => updateAll(method),
+    args: [METHOD, WOOD_NAMESPACE],
+    fn: (method, namespace) => updateAll(method, namespace),
   },
   // {
   //   cmds: ["-z", "--rezip"],
@@ -97,69 +93,46 @@ function getShellConst(varName) {
 function updateWood(woodType, method = "common") {
   if (!woodType) LOGGER.errOfferHelp("Wood type must be provided");
 
+  const wood = Wood.define(woodType);
   switch (method) {
     case "common":
-      Common.updateWood(Wood.baseAssets(woodType));
-      break;
+      return Common.updateWood(wood);
 
     case "ctm":
-      CTM.updateWood(Wood.assetsCTM(woodType));
-      break;
+      return CTM.updateWood(wood);
 
     case "fusion":
-      Fusion.updateWood(Wood.assetsFusion(woodType));
-      break;
+      return Fusion.updateWood(wood);
+
+    case "saplings":
+      return Saplings.updateForWood(wood);
   }
 }
 
-/** @param {MethodValues} method */
-function updateAll(method = "common") {
-  switch (method) {
-    case "common":
-      return Common.updateAll();
+/**
+ * @param {MethodValues} method
+ * @param {string} namespace
+ */
+function updateAll(method = "common", namespace) {
+  const woodSet = WoodTypes.resolveSet(namespace);
 
-    case "ctm":
-      return CTM.updateAll();
-
-    case "fusion":
-      return Fusion.updateAll();
+  if (!woodSet?.length) {
+    LOGGER.errOfferHelp(`Unknown namespace '${namespace}'`);
   }
-}
-
-/** @param {MethodValues} method */
-function rezip(method = "common") {
-  /** @type {ZipInfo} */
-  let zipInfo;
 
   switch (method) {
     case "common":
-      zipInfo = Zip.Common;
-      break;
+      return Common.updateAll(woodSet);
 
     case "ctm":
-      zipInfo = Zip.CTM;
-      break;
+      return CTM.updateAll(woodSet);
 
     case "fusion":
-      zipInfo = Zip.Fusion;
-      break;
+      return Fusion.updateAll(woodSet);
+
+    case "saplings":
+      return Saplings.updateAll(woodSet);
   }
-
-  const { packName, include, exclude, mcMeta } = zipInfo;
-
-  let contents = [...include, "pack.png"].join(" ");
-  if (exclude instanceof Array) {
-    contents = `${contents} -x ${exclude.join(" ")}`;
-  }
-
-  execSync(`zip -9qr ${packName} ${contents}`, { cwd: Ctx.WORK_DIR });
-
-  if (mcMeta) {
-    execSync(`cp ${mcMeta} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
-    execSync(`zip -9qm ${packName} pack.mcmeta`, { cwd: Ctx.WORK_DIR });
-  }
-
-  console.log("Resource Pack re-zipped!\n");
 }
 
 init();

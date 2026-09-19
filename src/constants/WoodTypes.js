@@ -1,7 +1,14 @@
-/** @typedef {(typeof WoodTypes)["VANILLA" | "REGIONS_UNEXPLORED"][number]} WoodType */
+import { Namespace } from "@const/Directories";
 
-export const WoodTypes = /** @type {const} */ ({
-  VANILLA: [
+const { VANILLA, REGIONS_UNEXPLORED } = Namespace;
+
+/**
+ * @typedef {keyof typeof Sets} WoodNamespaces
+ *
+ * @typedef {(typeof Sets)[WoodNamespaces][number]} WoodType
+ */
+const Sets = /** @type {const} */ ({
+  [VANILLA]: [
     "acacia",
     "birch",
     "cherry",
@@ -22,7 +29,7 @@ export const WoodTypes = /** @type {const} */ ({
     "stripped_spruce",
   ],
 
-  REGIONS_UNEXPLORED: [
+  [REGIONS_UNEXPLORED]: [
     // "regions_unexplored:alpha",
     "regions_unexplored:ashen",
     "regions_unexplored:baobab",
@@ -63,6 +70,22 @@ export const WoodTypes = /** @type {const} */ ({
     "regions_unexplored:stripped_willow",
     "regions_unexplored:stripped_wisteria",
   ],
+});
+
+export const WoodTypes = {
+  allNamespaces() {
+    return Object.keys(Sets);
+  },
+
+  /** @param {WoodNamespaces} namespace */
+  resolveSet(namespace = "") {
+    if (namespace) return Sets[namespace];
+
+    return Object.values(Namespace)
+      .filter((n) => n !== Namespace.MOD)
+      .map((n) => Sets[n])
+      .flat();
+  },
 
   /** @param {{ id: WoodType }} wood */
   hasVariants(wood) {
@@ -83,7 +106,7 @@ export const WoodTypes = /** @type {const} */ ({
   conditionalOverlay(wood) {
     return customProperties[wood.id]?.conditionalOverlay;
   },
-});
+};
 
 /**
  * @typedef {{

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_sunken_cross2_large_corner",
+  "render_type": "cutout",
+  "textures": {
+    "side1": "TEMPLATE_WOOD_rootsIDX_1_large",
+    "side2": "TEMPLATE_WOOD_rootsIDX_2_large"
+  }
+}

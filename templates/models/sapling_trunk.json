@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/template_sapling_trunk",
+	"textures": {
+		"log": "TEMPLATE_WOOD_log"
+	}
+}

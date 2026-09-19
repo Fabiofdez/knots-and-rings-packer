@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_sunken_cross",
+  "render_type": "cutout",
+  "textures": {
+    "cross": "TEMPLATE_WOOD_sproutIDX"
+  }
+}

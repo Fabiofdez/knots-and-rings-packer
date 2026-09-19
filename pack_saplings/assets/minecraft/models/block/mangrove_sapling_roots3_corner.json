@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/template_sunken_cross2_corner",
-  "render_type": "cutout",
-  "textures": {
-    "side1": "minecraft:block/mangrove_sapling_roots",
-    "side2": "minecraft:block/mangrove_sapling_roots3"
-  }
-}

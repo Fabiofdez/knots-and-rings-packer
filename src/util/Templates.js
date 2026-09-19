@@ -1,18 +1,19 @@
-import { Packs } from "@const/Directories";
+import { Dir, Packs } from "@const/Directories";
 import { MODELLED_SIDES, SIDES_TO_TOP_IDX } from "@const/LogSides";
 import { Ctx } from "@const/RunContext";
+import { Combos, SAPLINGS, SEEDLINGS } from "@const/SaplingModels";
 import { WoodTypes } from "@const/WoodTypes";
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 
-/** @type {{ [k: WoodType]: WoodResIdMapping }} */
+/** @type {{ [k: Identifier]: WoodResIdMapping }} */
 const MODEL_CACHE = {};
 
 const _O = "_overlay";
 const _H = "_horizontal";
 
 /**
- * @param {BaseWoodAssets} wood
+ * @param {WoodDef} wood
  * @returns {WoodResIdMapping}
  */
 function resIds(wood) {
@@ -47,7 +48,7 @@ function logEdges() {
   };
 }
 
-/** @param {BaseWoodAssets} wood */
+/** @param {WoodDef} wood */
 function particleResId(wood) {
   const overlay = WoodTypes.getOverlay(wood);
   if (overlay) return wood.resId() + _O;
@@ -55,7 +56,7 @@ function particleResId(wood) {
 }
 
 /**
- * @param {BaseWoodAssets} wood
+ * @param {WoodDef} wood
  * @param {ModelledSide} sides
  */
 function logResId(wood, sides) {
@@ -63,7 +64,7 @@ function logResId(wood, sides) {
 }
 
 /**
- * @param {BaseWoodAssets} wood
+ * @param {WoodDef} wood
  * @param {ModelledSide} sides
  */
 function topResId(wood, sides) {
@@ -73,7 +74,7 @@ function topResId(wood, sides) {
 }
 
 /**
- * @param {BaseWoodAssets} wood
+ * @param {WoodDef} wood
  * @param {"0" | "1" | "l" | "r" | "2"} sideBit
  */
 function sideResId(wood, sideBit) {
@@ -92,7 +93,7 @@ function sideResId(wood, sideBit) {
 }
 
 /**
- * @param {BaseWoodAssets} wood
+ * @param {WoodDef} wood
  * @param {"0" | "1" | "l" | "r" | "2"} sideBit
  */
 function overlayResId(wood, sideBit = "0") {
@@ -130,7 +131,7 @@ function replaceTarget(content, { regex = /TEMPLATE_BLOCK/g, value }) {
   return content.replace(regex, value);
 }
 
-/** @param {TemplateDef<BaseWoodAssets} def */
+/** @param {TemplateDef} def */
 function makeHorizontal(def) {
   const [withoutExt] = def.baseFile.split(".json");
   def.baseFile = `${withoutExt + _H}.json`;
@@ -139,7 +140,7 @@ function makeHorizontal(def) {
 }
 
 /**
- * @param {TemplateDef<BaseWoodAssets} def
+ * @param {TemplateDef} def
  * @param {string} overlay
  */
 function withOverlay(def, overlay = "") {
@@ -150,7 +151,7 @@ function withOverlay(def, overlay = "") {
   return def;
 }
 
-/** @type {TemplateProvider<BaseWoodAssets>} */
+/** @type {TemplateProvider} */
 const build = (T) => ({
   defineFor(wood) {
     let replacer = T.replacer;
@@ -176,13 +177,13 @@ const build = (T) => ({
   },
 });
 
-/** @type {TemplateProvider<WoodAssetsCTM>} */
+/** @type {TemplateProvider} */
 const buildCTM = build;
-/** @type {TemplateProvider<WoodAssetsFusion>} */
+/** @type {TemplateProvider} */
 const buildFusion = build;
 
 const Models = {
-  /** @type {LogModelTemplateProvider<ModelledSide, BaseWoodAssets>} */
+  /** @type {LogModelTemplateProvider} */
   buildLog: (defProvider) => ({
     defineFor(wood) {
       const models = MODELLED_SIDES.map((sides) => [
@@ -220,7 +221,7 @@ const Models = {
     },
   }),
 
-  /** @type {TemplateProvider<BaseWoodAssets>} */
+  /** @type {TemplateProvider} */
   buildWood: (def) => ({
     defineFor(wood) {
       let transform = (def) => def;
@@ -228,6 +229,22 @@ const Models = {
       if (overlay) transform = (def) => withOverlay(def, overlay);
 
       build(transform({ ...def })).defineFor(wood);
+    },
+  }),
+
+  /** @type {SaplingModelTemplateProvider} */
+  buildSapling: (templates, defProvider) => ({
+    defineFor(wood) {
+      const resolveForWood = (output = "") => `${wood.type}_${output}`;
+
+      templates
+        .map(([template, model, idx]) => ({
+          template,
+          model: resolveForWood(model),
+          combos: Combos.forIdx(template, idx),
+        }))
+        .map(({ template: t, model, combos }) => defProvider(t, model, combos))
+        .forEach((def) => build(def).defineFor(wood));
     },
   }),
 };
@@ -241,7 +258,7 @@ function rotate(axes = {}) {
   return `", ${parsed}`;
 }
 
-/** @type {WoodMultiPredicate<BaseWoodAssets>} */
+/** @type {WoodMultiPredicate} */
 const modelConditionReplacement = (wood) => ({
   regex: /CONDITION_PROP/g,
   value: WoodTypes.conditionalOverlay(wood)?.conditionName,
@@ -265,7 +282,7 @@ const modelOrientationReplacements = [
   { regex: /",[\s\n]*"Z_3": "TEMPLATE"/g, value: rotate({ x: 90, y: 90 }) },
 ];
 
-/** @type {TemplateDef<BaseWoodAssets>} */
+/** @type {TemplateDef} */
 const logBlockStateDef = {
   output: (wood) => `${wood.blockstates()}/${wood.logAsset}.json`,
   replacer: (wood) => [
@@ -295,16 +312,52 @@ export const Templates = {
       output: (wood) => `${wood.blockstates()}/${wood.woodAsset}.json`,
       replacer: (wood) => ({
         regex: /TEMPLATE_WOOD/g,
-        value: wood.resId(`${wood.woodAsset}_custom`),
+        value: wood.resId(wood.woodAsset) + "_custom",
       }),
       postProcess: (json) => JSON.stringify(JSON.parse(json)),
+    }),
+
+    SAPLING: build({
+      baseFile: "blockstates/sapling.json",
+      // prettier-ignore
+      output: (wood) => `${wood.blockstates(Packs.SAPLINGS)}/${wood.saplingAsset()}.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_SAPLING/g, value: wood.resId(wood.typeAsset) },
+      ],
+    }),
+
+    SAPLING_STEM: build({
+      baseFile: "blockstates/sapling_stem.json",
+      // prettier-ignore
+      output: (wood) => `${Dir.MOD.blockstates(Packs.SAPLINGS)}/${wood.saplingAsset()}_stem.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_SAPLING/g, value: wood.resId(wood.typeAsset) },
+      ],
+    }),
+
+    SEED: build({
+      baseFile: "blockstates/seed.json",
+      // prettier-ignore
+      output: (wood) => `${Dir.MOD.blockstates(Packs.SAPLINGS)}/${wood.seedAsset()}.json`,
+      replacer: (wood) => [{ regex: /TEMPLATE_WOOD/g, value: wood.type }],
+    }),
+  },
+
+  ITEMS: {
+    SEED: build({
+      baseFile: "items/seed.json",
+      // prettier-ignore
+      output: (wood) => `${Dir.MOD.items(Packs.SAPLINGS)}/${wood.seedAsset()}.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_SEED/g, value: wood.seedAsset() },
+      ],
     }),
   },
 
   MODELS: {
     LOG: Models.buildLog((sides, model) => ({
       baseFile: "models/log.json",
-      output: (wood) => `${wood.models()}/${model}.json`,
+      output: (wood) => `${wood.models()}/block/${model}.json`,
       replacer: (wood) => [
         { regex: /TEMPLATE_PARTICLE/g, value: particleResId(wood) },
 
@@ -329,19 +382,55 @@ export const Templates = {
 
     WOOD: Models.buildWood({
       baseFile: "models/wood.json",
-      output: (wood) => `${wood.models()}/${wood.woodAsset}_custom.json`,
+      output: (wood) => `${wood.models()}/block/${wood.woodAsset}_custom.json`,
       replacer: (wood) => [
         { regex: /TEMPLATE_PARTICLE/g, value: particleResId(wood) },
         { regex: /TEMPLATE_BARK/g, value: wood.resId() },
         { regex: /TEMPLATE_OVERLAY/g, value: overlayResId(wood) },
       ],
     }),
+
+    SAPLING: Models.buildSapling(SAPLINGS, (template, model, combo) => ({
+      baseFile: `models/${template}.json`,
+      output: (wood) => `${wood.models(Packs.SAPLINGS)}/block/${model}.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_WOOD/g, value: wood.resId(wood.typeAsset) },
+        { regex: /IDX_1/g, value: combo[1] },
+        { regex: /IDX_2/g, value: combo[2] },
+        { regex: /IDX/g, value: combo[0] },
+      ],
+    })),
+
+    SEEDLING: Models.buildSapling(SEEDLINGS, (template, model, combo) => ({
+      baseFile: `models/${template}.json`,
+      output: `${Dir.MOD.models(Packs.SAPLINGS)}/block/${model}.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_WOOD/g, value: wood.type },
+        { regex: /IDX_1/g, value: combo[1] },
+        { regex: /IDX_2/g, value: combo[2] },
+        { regex: /IDX/g, value: combo[0] },
+      ],
+    })),
+
+    SEED: build({
+      baseFile: "models/seed.json",
+      // prettier-ignore
+      output: (wood) => `${Dir.MOD.models(Packs.SAPLINGS)}/item/${wood.seedAsset()}.json`,
+      replacer: (wood) => [
+        { regex: /TEMPLATE_SEED/g, value: wood.seedAsset() },
+      ],
+    }),
+
+    /* 
+    pack_saplings/assets/knots_and_rings/textures/item/acacia_seeds.png
+    pack_saplings/assets/minecraft/textures/block/acacia_stem_sides.png
+    */
   },
 
   CTM: {
     VARIANTS: buildCTM({
       baseFile: "variants.ctm.properties",
-      output: (wood) => `${wood.variantsDir}/variants.ctm.properties`,
+      output: (wood) => `${Dir.CTM.variants(wood)}/variants.ctm.properties`,
       replacer: (wood) => ({ regex: /TEMPLATE_TILE/g, value: wood.resId() }),
     }),
   },
@@ -349,8 +438,8 @@ export const Templates = {
   Fusion: {
     VARIANTS: buildFusion({
       baseFile: "variants.png.mcmeta",
-      output: (wood) =>
-        `${wood.textures(Packs.FUSION)}/${wood.logAsset}.png.mcmeta`,
+      // prettier-ignore
+      output: (wood) => `${wood.textures(Packs.FUSION)}/block/${wood.logAsset}.png.mcmeta`,
     }),
   },
 };

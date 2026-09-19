@@ -8,12 +8,12 @@ import { Wood } from "@util/Wood";
 import { execSync } from "child_process";
 
 export const Common = {
-  /** @param {BaseWoodAssets} wood */
+  /** @param {WoodDef} wood */
   markToUpdate(wood) {
     Ctx.NEW_WOODS = { ...Ctx.NEW_WOODS, [wood.id]: true };
   },
 
-  /** @param {BaseWoodAssets} wood */
+  /** @param {WoodDef} wood */
   updateWood(wood) {
     this.markToUpdate(wood);
 
@@ -22,7 +22,7 @@ export const Common = {
 
     const condOverlay = WoodTypes.conditionalOverlay(wood);
 
-    Dir.makeTemp(`tmp/common/${wood.assetPath}`, async (dir) => {
+    Dir.makeTemp(`tmp/common/${wood.typeAsset}`, async (dir) => {
       await SpriteMaker.COMMON.updateTopSprites(dir, wood);
       SpriteMaker.COMMON.updateLogSideSprites(dir, wood);
 
@@ -44,10 +44,10 @@ export const Common = {
     console.log(`...updated '${wood.id}' wood type`);
   },
 
-  updateAll() {
-    const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
+  updateAll(woodSet = []) {
+    console.log(`Updating all ${woodSet.length} wood types...`);
 
-    const woodAssets = allWoods.map((wood) => Wood.baseAssets(wood));
+    const woodAssets = woodSet.map((wood) => Wood.define(wood));
     for (const wood of woodAssets) {
       Common.updateWood(wood);
     }

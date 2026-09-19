@@ -9,17 +9,17 @@ import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
 export const Fusion = {
-  /** @param {WoodAssetsFusion} wood */
+  /** @param {WoodDef} wood */
   updateWood(wood) {
     const hasVariants = WoodTypes.hasVariants(wood);
     setUpDirs(wood);
 
-    Dir.makeTemp(`tmp/fusion/${wood.assetPath}`, async (dir) => {
-      if (hasVariants) SpriteMaker.Fusion.updateVariantSprites(dir, wood);
+    Dir.makeTemp(`tmp/fusion/${wood.typeAsset}`, async (dir) => {
+      if (hasVariants) SpriteMaker.FUSION.updateVariantSprites(dir, wood);
 
       if (!Ctx.NEW_WOODS?.[wood.id]) return;
 
-      await SpriteMaker.Fusion.collectNewAssets(dir, wood);
+      await SpriteMaker.FUSION.collectNewAssets(dir, wood);
 
       if (hasVariants) {
         Templates.Fusion.VARIANTS.defineFor(wood);
@@ -27,22 +27,21 @@ export const Fusion = {
     });
   },
 
-  updateAll() {
-    const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
-    console.log(`Updating all ${allWoods.length} wood types...`);
+  updateAll(woodSet = []) {
+    console.log(`Updating all ${woodSet.length} wood types...`);
 
-    Dir.makeTemp(`${Ctx.WORK_DIR}/tmp/fusion/edges`, async (dir) => {
-      await SpriteMaker.Fusion.updateWoodEdgeSprites(dir);
+    Dir.makeTemp(`tmp/fusion/edges`, async (dir) => {
+      await SpriteMaker.FUSION.updateWoodEdgeSprites(dir);
     });
 
-    const woodAssets = allWoods.map((wood) => Wood.assetsFusion(wood));
+    const woodAssets = woodSet.map((wood) => Wood.define(wood));
     for (const wood of woodAssets) {
       Fusion.updateWood(wood);
     }
   },
 };
 
-/** @param {WoodAssetsFusion} wood */
+/** @param {WoodDef} wood */
 function setUpDirs(wood) {
   if (!existsSync(wood.textures(Packs.FUSION))) {
     console.log(`Adding new '${wood.id}' wood type...`);

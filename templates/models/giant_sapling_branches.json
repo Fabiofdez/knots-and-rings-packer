@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/template_giant_sapling_branches",
+  "textures": {
+    "branches1": "TEMPLATE_WOOD_sapling_branchesIDX_1",
+    "branches2": "TEMPLATE_WOOD_sapling_branchesIDX_2",
+    "leaves1": "TEMPLATE_WOOD_sapling_leavesIDX_1",
+    "leaves2": "TEMPLATE_WOOD_sapling_leavesIDX_2"
+  }
+}

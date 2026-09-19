@@ -9,26 +9,27 @@ import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
 export const CTM = {
-  /** @param {WoodAssetsCTM} wood */
+  /** @param {WoodDef} wood */
   updateWood(wood) {
-    const isStripped = WoodFacts.isStripped(wood);
     const hasVariants = WoodTypes.hasVariants(wood);
-    setUpDirs(wood, isStripped, hasVariants);
+    setUpDirs(wood, hasVariants);
 
-    Dir.makeTemp(`tmp/ctm/${wood.assetPath}`, async (dir) => {
+    Dir.makeTemp(`tmp/ctm/${wood.typeAsset}`, async (dir) => {
       if (hasVariants) await SpriteMaker.CTM.updateVariantSprites(dir, wood);
 
-      if (!Ctx.NEW_WOODS?.[wood.id]) return removeDirs(wood);
+      if (!Ctx.NEW_WOODS?.[wood.id]) {
+        removeDirs(wood);
+        return;
+      }
 
       if (hasVariants) Templates.CTM.VARIANTS.defineFor(wood);
     });
   },
 
-  updateAll() {
-    const allWoods = [...WoodTypes.VANILLA, ...WoodTypes.REGIONS_UNEXPLORED];
-    console.log(`Updating all ${allWoods.length} wood types...`);
+  updateAll(woodSet = []) {
+    console.log(`Updating all ${woodSet.length} wood types...`);
 
-    const woodAssets = allWoods.map((wood) => Wood.assetsCTM(wood));
+    const woodAssets = woodSet.map((wood) => Wood.define(wood));
     for (const wood of woodAssets) {
       CTM.updateWood(wood);
     }
@@ -36,35 +37,28 @@ export const CTM = {
 };
 
 /**
- * @param {WoodAssetsCTM} wood
- * @param {boolean} isStripped
+ * @param {WoodDef} wood
  * @param {boolean} makeVariants
  */
-function setUpDirs(wood, isStripped, makeVariants) {
-  const existingVariants = existsSync(wood.variantsDir);
-  const existingTops = existsSync(wood.topsDir);
+function setUpDirs(wood, makeVariants) {
+  const variantsDir = Dir.CTM.variants(wood);
+  const existingVariants = existsSync(variantsDir);
 
-  if (makeVariants && !existingVariants && (isStripped || !existingTops)) {
+  if (makeVariants && !existingVariants) {
     console.log(`Adding new '${wood.id}' wood type...`);
   }
 
   if (!existingVariants) {
-    if (makeVariants) execSync(`mkdir -p ${wood.variantsDir}`);
+    if (makeVariants) execSync(`mkdir -p ${variantsDir}`);
   } else {
-    if (!makeVariants && isStripped) execSync(`rm -rf ${wood.variantsDir}`);
-  }
-
-  if (!existingTops) {
-    if (!isStripped) execSync(`mkdir -p ${wood.topsDir}`);
-  } else {
-    if (isStripped) execSync(`rm -rf ${wood.topsDir}`);
+    if (!makeVariants && wood.isStripped()) execSync(`rm -rf ${variantsDir}`);
   }
 
   Common.markToUpdate(wood);
 }
 
-/** @param {WoodAssetsCTM} wood */
+/** @param {WoodDef} wood */
 function removeDirs(wood) {
-  if (existsSync(wood.variantsDir)) execSync(`rm -rf ${wood.variantsDir}`);
-  if (existsSync(wood.topsDir)) execSync(`rm -rf ${wood.topsDir}`);
+  const variantsDir = Dir.CTM.variants(wood);
+  if (existsSync(variantsDir)) execSync(`rm -rf ${variantsDir}`);
 }

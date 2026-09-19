@@ -34,12 +34,12 @@
     },
     {
       "apply": [
-        { "model": "minecraft:block/mangrove_sapling_roots" },
-        { "model": "minecraft:block/mangrove_sapling_roots2" },
-        { "model": "minecraft:block/mangrove_sapling_roots3" },
-        { "model": "minecraft:block/mangrove_sapling_roots", "y": 90 },
-        { "model": "minecraft:block/mangrove_sapling_roots2", "y": 90 },
-        { "model": "minecraft:block/mangrove_sapling_roots3", "y": 90 }
+        { "model": "minecraft:block/mangrove_roots" },
+        { "model": "minecraft:block/mangrove_roots2" },
+        { "model": "minecraft:block/mangrove_roots3" },
+        { "model": "minecraft:block/mangrove_roots", "y": 90 },
+        { "model": "minecraft:block/mangrove_roots2", "y": 90 },
+        { "model": "minecraft:block/mangrove_roots3", "y": 90 }
       ],
       "when": {
         "AND": [{ "growth_stage": "4" }, { "tree_shape": "single|3x3" }]
@@ -47,12 +47,12 @@
     },
     {
       "apply": [
-        { "model": "minecraft:block/mangrove_sapling_roots_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots2_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots3_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots4_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots5_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots6_corner" }
+        { "model": "minecraft:block/mangrove_roots_corner" },
+        { "model": "minecraft:block/mangrove_roots2_corner" },
+        { "model": "minecraft:block/mangrove_roots3_corner" },
+        { "model": "minecraft:block/mangrove_roots4_corner" },
+        { "model": "minecraft:block/mangrove_roots5_corner" },
+        { "model": "minecraft:block/mangrove_roots6_corner" }
       ],
       "when": {
         "AND": [{ "growth_stage": "4" }, { "tree_shape": "2x2" }]
@@ -73,12 +73,12 @@
     },
     {
       "apply": [
-        { "model": "minecraft:block/mangrove_sapling_roots_large" },
-        { "model": "minecraft:block/mangrove_sapling_roots2_large" },
-        { "model": "minecraft:block/mangrove_sapling_roots3_large" },
-        { "model": "minecraft:block/mangrove_sapling_roots_large", "y": 90 },
-        { "model": "minecraft:block/mangrove_sapling_roots2_large", "y": 90 },
-        { "model": "minecraft:block/mangrove_sapling_roots3_large", "y": 90 }
+        { "model": "minecraft:block/mangrove_roots_large" },
+        { "model": "minecraft:block/mangrove_roots2_large" },
+        { "model": "minecraft:block/mangrove_roots3_large" },
+        { "model": "minecraft:block/mangrove_roots_large", "y": 90 },
+        { "model": "minecraft:block/mangrove_roots2_large", "y": 90 },
+        { "model": "minecraft:block/mangrove_roots3_large", "y": 90 }
       ],
       "when": {
         "AND": [{ "growth_stage": "5" }, { "tree_shape": "3x3" }]
@@ -86,12 +86,12 @@
     },
     {
       "apply": [
-        { "model": "minecraft:block/mangrove_sapling_roots_large_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots2_large_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots3_large_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots4_large_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots5_large_corner" },
-        { "model": "minecraft:block/mangrove_sapling_roots6_large_corner" }
+        { "model": "minecraft:block/mangrove_roots_large_corner" },
+        { "model": "minecraft:block/mangrove_roots2_large_corner" },
+        { "model": "minecraft:block/mangrove_roots3_large_corner" },
+        { "model": "minecraft:block/mangrove_roots4_large_corner" },
+        { "model": "minecraft:block/mangrove_roots5_large_corner" },
+        { "model": "minecraft:block/mangrove_roots6_large_corner" }
       ],
       "when": {
         "AND": [{ "growth_stage": "5" }, { "tree_shape": "2x2" }]

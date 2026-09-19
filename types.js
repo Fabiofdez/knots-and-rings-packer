@@ -1,13 +1,16 @@
 /**
- * @typedef {import("@util/Wood")["Wood"]} _utils_Wood
+ * @typedef {{
+ *   name: string;
+ *   optional?: boolean;
+ *   values?: string[];
+ *   default: string;
+ * }} Arg
+ */
+
+/**
+ * @typedef {`${string}:${string}`} Identifier
  *
- * @typedef {`${string}:${string}`} WoodType
- *
- * @typedef {import("@util/Wood").BaseWoodAssets} BaseWoodAssets
- *
- * @typedef {ReturnType<_utils_Wood["assetsCTM"]>} WoodAssetsCTM
- *
- * @typedef {ReturnType<_utils_Wood["assetsFusion"]>} WoodAssetsFusion
+ * @typedef {import("@util/Wood").WoodDef} WoodDef
  */
 
 /**
@@ -16,21 +19,18 @@
  *
  * @typedef {ModelledSides[number]} ModelledSide
  *
- * @typedef {ReturnType<BaseWoodAssets["logFaces"]>} LogFaceMapping
+ * @typedef {ReturnType<WoodDef["logFaces"]>} LogFaceMapping
  *
- * @typedef {ReturnType<BaseWoodAssets["barkVariants"]>} VariantMapping
+ * @typedef {ReturnType<WoodDef["barkVariants"]>} VariantMapping
  *
- * @typedef {ReturnType<BaseWoodAssets["resId"]>} ModelId
+ * @typedef {ReturnType<WoodDef["resId"]>} ModelId
  *
  * @typedef {{ [Key in keyof LogFaceMapping]: ModelId } & {
  *   VARIANTS: ModelId[];
  * }} WoodResIdMapping
  *
  *
- * @typedef {Omit<WoodResIdMapping, "BARK" | "CORE" | "TOP" | "VARIANTS">} EdgeResIdMapping
- *
- *
- * @typedef {keyof EdgeResIdMapping} EdgeSide
+ * @typedef {Omit<WoodResIdMapping, "CORE" | "TOP" | "VARIANTS">} EdgeResIdMapping
  */
 
 /**
@@ -40,95 +40,40 @@
  */
 
 /**
- * @template T
- * @typedef {(wood: T) => string} WoodPredicate
+ * @typedef {(wood: WoodDef) => string} WoodPredicate
+ *
+ * @typedef {(wood: WoodDef) => ReplaceTarget} WoodMultiPredicate
  */
 
 /**
- * @template T
- * @typedef {(wood: T) => ReplaceTarget} WoodMultiPredicate
- */
-
-/**
- * @template T
  * @typedef {{
  *   baseFile: string;
- *   output: string | WoodPredicate<T>;
- *   replacer: ReplaceTarget | WoodMultiPredicate<T>;
+ *   output: string | WoodPredicate;
+ *   replacer: ReplaceTarget | WoodMultiPredicate;
  *   postProcess?: (content: string) => string;
  * }} TemplateDef
- */
-
-/**
- * @template T
- * @typedef {{ defineFor: (wood: T) => void }} PropTemplate
- */
-
-/**
- * @template T
- * @typedef {(def: TemplateDef<T>) => PropTemplate<T>} TemplateProvider
- */
-
-/**
- * @template T, U
- * @typedef {(
- *   defProvider: (arg1: T, model: string) => TemplateDef<U>,
- * ) => PropTemplate<U>} LogModelTemplateProvider
- */
-
-/**
- * @template T
- * @typedef {(defProvider: TemplateDef<T>) => PropTemplate<T>} WoodModelTemplateProvider
- */
-
-/**
- * @template T, U
- * @typedef {(
- *   defProvider: (arg1: T, model: VariantMapping[number]) => TemplateDef<U>,
- * ) => PropTemplate<U>} BarkModelTemplateProvider
- */
-
-/**
- * @typedef {{
- *   baseFile: string;
- *   output: string;
- *   replacer: ReplaceTarget;
- *   postProcess?: (content: string) => string;
- * }} EdgeTemplateDef
  *
  *
- * @typedef {{ defineAll: () => void }} EdgePropTemplate
+ * @typedef {{ defineFor: (wood: WoodDef) => void }} PropTemplate
+ *
+ * @typedef {(def: TemplateDef) => PropTemplate} TemplateProvider
+ */
+
+/**
+ * @typedef {(
+ *   defProvider: (side: ModelledSide, model: string) => TemplateDef,
+ * ) => PropTemplate} LogModelTemplateProvider
+ */
+
+/**
+ * @typedef {[template: string, output: string, idx: number]} ResolvedModel
  *
  * @typedef {(
- *   defProvider: (side: EdgeSide, model: string) => EdgeTemplateDef,
- * ) => EdgePropTemplate} EdgeModelTemplateProvider
- */
-
-/**
- * @typedef {{
- *   fileName: string;
- *   properties: Object[];
- *   matchBlocks: string;
- *   tiles: string;
- *   faces: string;
- * }} MappingCTM
- *
- *
- * @typedef {(wood: MappingCTM) => ReplaceTarget} MappingMultiPredicate
- *
- * @typedef {{ defineAll: (woodAssets: WoodAssetsCTM[]) => void }} EdgeCTMPropTemplate
- *
- *
- * @typedef {(
- *   defProvider: (mapping: MappingCTM) => EdgeTemplateDef,
- * ) => EdgeCTMPropTemplate} EdgeCTMTemplateProvider
- */
-
-/**
- * @typedef {{
- *   packName: string;
- *   include: string[];
- *   exclude?: string[];
- *   mcMeta?: string;
- * }} ZipInfo
+ *   templates: ResolvedModel[],
+ *   defProvider: (
+ *     template: string,
+ *     model: string,
+ *     combo: string[],
+ *   ) => TemplateDef,
+ * ) => PropTemplate} SaplingModelTemplateProvider
  */

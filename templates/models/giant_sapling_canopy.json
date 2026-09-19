@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_giant_sapling_canopy",
+  "textures": {
+    "canopy_side1": "TEMPLATE_WOOD_leaves_overhangIDX_1",
+    "canopy_side2": "TEMPLATE_WOOD_leaves_overhangIDX_2",
+    "canopy_top": "TEMPLATE_WOOD_leaves"
+  }
+}

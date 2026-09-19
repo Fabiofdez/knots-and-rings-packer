@@ -13,12 +13,14 @@ function getOptions() {
   return `Options: \n${opts.join("\n")}\n`;
 }
 
-/** @param {import("@root").Arg | string} arg */
+/** @param {Arg | string} arg */
 function stringifyArg(arg) {
-  if (typeof arg === "string") return arg;
+  if (!arg?.name) return arg;
+
   let str = arg.name;
   if (arg.default) str += `=${arg.default}`;
   if (arg.optional) str = `[${str}]`;
+
   return str;
 }
 

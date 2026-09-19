@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "knots_and_rings:item/TEMPLATE_SEED"
+  }
+}

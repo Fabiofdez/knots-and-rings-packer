@@ -1,116 +1,124 @@
 import { Dir, Namespace, Packs } from "@const/Directories";
-import { Ctx } from "@const/RunContext";
 
-/** @type {{ [k: WoodType]: BaseWoodAssets }} */
-const WOOD_CACHE = {};
+/** @type {Map<Identifier, WoodDef>} */
+const CACHE = new Map();
 
-/** @typedef {ReturnType<(typeof Wood)["baseAssets"]>} BaseWoodAssets */
+/** @typedef {WoodDef} WoodDef */
+class WoodDef {
+  type;
+  namespace;
+  logBlock;
+  woodBlock;
+  saplingBlock;
+  id;
+
+  typeAsset;
+  logAsset;
+  woodAsset;
+
+  /** @param {Identifier} id */
+  constructor(id) {
+    const [type, namespace = Namespace.VANILLA] = id.split(":").reverse();
+    let typeAsset = `${namespace}/${type}`;
+    if (namespace === Namespace.VANILLA) typeAsset = type;
+
+    this.type = type;
+    this.namespace = namespace;
+    this.logBlock = /** @type {const} */ (`${id}_log`);
+    this.woodBlock = /** @type {const} */ (`${id}_wood`);
+    this.saplingBlock = /** @type {const} */ (`${id}_sapling`);
+    this.id = id;
+
+    this.typeAsset = typeAsset;
+    this.logAsset = /** @type {const} */ (`${type}_log`);
+    this.woodAsset = /** @type {const} */ (`${type}_wood`);
+
+    CACHE.set(this.id, this);
+  }
+
+  saplingAsset() {
+    switch (this.type) {
+      case "mangrove":
+        return /** @type {const} */ (`${this.type}_propagule`);
+      default:
+        return /** @type {const} */ (`${this.type}_sapling`);
+    }
+  }
+
+  seedAsset() {
+    switch (this.type) {
+      case "acacia":
+      case "birch":
+      case "spruce":
+        return /** @type {const} */ (`${this.type}_seeds`);
+
+      default:
+        return /** @type {const} */ (`${this.type}_seed`);
+    }
+  }
+
+  blockstates(pack = Packs.DEFAULT) {
+    return Dir.blockstates(pack, this.namespace);
+  }
+
+  items(pack = Packs.DEFAULT) {
+    return Dir.items(pack, this.namespace);
+  }
+
+  models(pack = Packs.DEFAULT) {
+    return Dir.models(pack, this.namespace);
+  }
+
+  textures(pack = Packs.DEFAULT) {
+    return Dir.textures(pack, this.namespace);
+  }
+
+  resId(customPath = "") {
+    return /** @type {const} */ (
+      `${this.namespace}:block/${customPath || this.logAsset}`
+    );
+  }
+
+  logFaces() {
+    return /** @type {const} */ ({
+      SM: `${this.logAsset}_side_sm`,
+      LEFT: `${this.logAsset}_side_left`,
+      RIGHT: `${this.logAsset}_side_right`,
+      CORE: `${this.logAsset}_side_core`,
+
+      TOP: `${this.logAsset}_top`,
+    });
+  }
+
+  logTop() {
+    return /** @type {const} */ (`${this.logAsset}_top`);
+  }
+
+  bark() {
+    return /** @type {const} */ (`${this.type}_bark`);
+  }
+
+  /** @returns {`${ReturnType<WoodDef["bark"]>}_${number}`[]} */
+  barkVariants() {
+    return Array(12)
+      .fill(this.bark())
+      .map((variant, idx) => `${variant}_${idx + 1}`);
+  }
+
+  isStripped() {
+    return this.type.includes("stripped");
+  }
+}
+
 export const Wood = {
-  /** @param {WoodType} id */
-  assetsCTM(id) {
-    const wood = WOOD_CACHE[id] || this.baseAssets(id);
-
-    return /** @type {const} */ ({
-      ...wood,
-      variantsDir: `${Ctx.WORK_DIR}/${Dir.CTM.forType(wood.namespace, wood.type)}`,
-      topsDir: `${Ctx.WORK_DIR}/${Dir.CTM.forType(wood.namespace, wood.type)}/top`,
-    });
-  },
-
-  /** @param {WoodType} id */
-  assetsFusion(id) {
-    const wood = WOOD_CACHE[id] || this.baseAssets(id);
-
-    return /** @type {const} */ ({
-      ...wood,
-      modifiersDir: `${Ctx.WORK_DIR}/${Dir.FUSION.modelModifiers(wood.namespace)}/blocks`,
-    });
-  },
-
-  /** @param {WoodType} id */
-  baseAssets(id) {
-    const [path, namespace = Namespace.VANILLA] = id.split(":").reverse();
-    let assetPath = `${namespace}/${path}`;
-    if (namespace === Namespace.VANILLA) assetPath = path;
-
-    const wood = /** @type {const} */ ({
-      type: path,
-      namespace,
-      logBlock: `${id}_log`,
-      woodBlock: `${id}_wood`,
-
-      id,
-      assetPath,
-      logAsset: `${path}_log`,
-      woodAsset: `${path}_wood`,
-
-      blockstates(pack = Packs.DEFAULT) {
-        return /** @type {const} */ (
-          `${Ctx.WORK_DIR}/${pack}/${Dir.blockstates(namespace)}`
-        );
-      },
-
-      models(pack = Packs.DEFAULT) {
-        return /** @type {const} */ (
-          `${Ctx.WORK_DIR}/${pack}/${Dir.models(namespace)}/block`
-        );
-      },
-
-      textures(pack = Packs.DEFAULT) {
-        return /** @type {const} */ (
-          `${Ctx.WORK_DIR}/${pack}/${Dir.textures(namespace)}/block`
-        );
-      },
-
-      resId(customPath = "") {
-        return /** @type {const} */ (
-          `${this.namespace}:block/${customPath || this.logAsset}`
-        );
-      },
-
-      logFaces() {
-        return /** @type {const} */ ({
-          BARK: `${this.logAsset}_side_bark`,
-          SM: `${this.logAsset}_side_sm`,
-          LEFT: `${this.logAsset}_side_left`,
-          RIGHT: `${this.logAsset}_side_right`,
-          CORE: `${this.logAsset}_side_core`,
-
-          TOP: `${this.logAsset}_top`,
-        });
-      },
-
-      logTop() {
-        return /** @type {const} */ (`${this.logAsset}_top`);
-      },
-
-      bark() {
-        return /** @type {const} */ (`${this.type}_bark`);
-      },
-
-      /** @returns {`${ReturnType<BaseWoodAssets["bark"]>}_${number}`[]} */
-      barkVariants() {
-        return Array(12)
-          .fill(this.bark())
-          .map((variant, idx) => `${variant}_${idx + 1}`);
-      },
-    });
-
-    if (!WOOD_CACHE[wood.id]) WOOD_CACHE[wood.id] = wood;
-    return wood;
+  /** @param {Identifier} id */
+  define(id) {
+    return CACHE.get(id) || new WoodDef(id);
   },
 };
 
 export const WoodFacts = {
-  /**
-   * @param {BaseWoodAssets} wood
-   * @param {boolean} value
-   */
-  isTrunk(wood, value = true) {
-    return /** @type {const} */ (`${wood.logBlock}:is_trunk=${value}`);
-  },
-
-  /** @param {BaseWoodAssets} wood */
+  /** @param {WoodDef} wood */
   isStripped(wood) {
     return wood.logBlock.includes("stripped");
   },

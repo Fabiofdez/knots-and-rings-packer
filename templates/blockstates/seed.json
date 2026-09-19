@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "": [
+      { "model": "knots_and_rings:block/TEMPLATE_WOOD_seedling" },
+      { "model": "knots_and_rings:block/TEMPLATE_WOOD_seedling2" },
+      { "model": "knots_and_rings:block/TEMPLATE_WOOD_seedling3" }
+    ]
+  }
+}
