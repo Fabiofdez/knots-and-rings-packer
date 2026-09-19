@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/template_top_overlay_corner",
-  "textures": {
-    "texture": "minecraft:block/dirt_overlay"
-  }
-}
